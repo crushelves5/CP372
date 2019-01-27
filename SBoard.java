@@ -18,7 +18,7 @@ import java.net.Socket;
  * shut it down.
  */
 
-public class CapitalizeServer {
+public class SBoard{
 
     /**
      * Application method to run the server runs in an infinite loop
@@ -29,12 +29,12 @@ public class CapitalizeServer {
      * messages.  It is certainly not necessary to do this.
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("The capitalization server is running.");
+        System.out.println("The Note Board server is running.");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(9898);
         try {
             while (true) {
-                new Capitalizer(listener.accept(), clientNumber++).start();
+                new Client(listener.accept(), clientNumber++).start();
             }
         } finally {
             listener.close();
@@ -42,15 +42,15 @@ public class CapitalizeServer {
     }
 
     /**
-     * A private thread to handle capitalization requests on a particular
+     * A private thread to handle client requests on a particular
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-    private static class Capitalizer extends Thread {
+    private static class Client extends Thread {
         private Socket socket;
         private int clientNumber;
 
-        public Capitalizer(Socket socket, int clientNumber) {
+        public Client(Socket socket, int clientNumber) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             log("New connection with client# " + clientNumber + " at " + socket);

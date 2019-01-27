@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class CapitalizeClient {
+public class Client {
     public static void main(String[] args) throws Exception {
 //        System.out.println("Enter the IP address of a machine running the capitalize server:");
         String serverAddress = "localhost";//new Scanner(System.in).nextLine();
@@ -20,9 +20,9 @@ public class CapitalizeClient {
 
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("\nEnter a string to send to the server (empty to quit):");
+            System.out.println("\nEnter a message to send to the server (DISCONNECT to disconnect):");
             String message = scanner.nextLine();
-            if (message == null || message.isEmpty()) {
+            if (message.equals("DISCONNECT")) {
                 break;
             }
             out.println(message);
