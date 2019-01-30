@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * SOURCE:  http://cs.lmu.edu/~ray/notes/javanetexamples/
@@ -18,8 +19,12 @@ import java.net.Socket;
  * shut it down.
  */
 
-public class SBoard{
-
+public class Server{
+	private static int port;
+	private static int board_width;
+	private static int board_height;
+	private static String default_color;
+	private static ArrayList<String> colors = new ArrayList<String>();
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -29,9 +34,18 @@ public class SBoard{
      * messages.  It is certainly not necessary to do this.
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("The Note Board server is running.");
+		try{
+		port = Integer.parseInt(args[0]);
+		board_width = Integer.parseInt(args[1]);
+		board_height = Integer.parseInt(args[2]);
+		default_color = args[3];
+		colors.add(default_color);
+		for (int x = 4; x < args.length;x++){
+			colors.add(args[x]);
+		}
+        System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
-        ServerSocket listener = new ServerSocket(9898);
+        ServerSocket listener = new ServerSocket(port);
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -40,6 +54,11 @@ public class SBoard{
             listener.close();
         }
     }
+	catch(Exception e){
+		System.out.println("Server specifications invalid");
+	}
+	}
+	
 
     /**
      * A private thread to handle client requests on a particular
@@ -70,9 +89,12 @@ public class SBoard{
                 BufferedReader in = new BufferedReader(
                         new InputStreamReader(socket.getInputStream()));
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
+				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
                 // Send a welcome message to the client.
-                out.println("Hello, you are client #" + clientNumber + ".");
+				for (int x = 0; x < colors.size();x++){
+					welcome_note = welcome_note + colors.get(x)+", ";
+				}
+				out.println(welcome_note);
 //                out.println("Enter a line with only a period to quit\n");
 
                 // Get messages from the client, line by line; return them
