@@ -39,7 +39,7 @@ public class Client {
 				
 			}
 			
-           out.println(message);
+          // out.println(message);
            System.out.println(in.readLine());
 			
         }
