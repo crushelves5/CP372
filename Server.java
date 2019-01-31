@@ -20,6 +20,15 @@ import java.util.Scanner;
  * shut it down.
  */
 
+class Pin{
+    int x;
+    int y;
+    Pin(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+}
+
 class Note{
      String color;
      String message;
@@ -28,7 +37,7 @@ class Note{
      int width;
      int height;
      boolean pinned;
-	 int pinCount;
+     private static LinkedList<Pin> pins = new LinkedList<Pin>();
 
         Note(String color, String message, int coord_x,int coord_y, int width, int height){
             this.color = color;
@@ -37,8 +46,7 @@ class Note{
 			this.coord_y = coord_y;
             this.width = width;
             this.height = height;
-            this.pinned = false;
-			this.pinCount = 0;
+            this.pinned = false;			
      }
  }
 
@@ -50,6 +58,7 @@ public class Server{
 	private static String default_color;
     private static ArrayList<String> colors = new ArrayList<String>();
     public static LinkedList<Note> noteList = new LinkedList<Note>();
+    public static LinkedList<Pin> pinList = new LinkedList<Pin>();
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -213,20 +222,21 @@ public class Server{
             int pinCount = 0;
             int coord_x = msg_scan.nextInt();
             int coord_y = msg_scan.nextInt();
-            
 
             if(coord_x > board_width || coord_y > board_height){
 				valid = false;
 				return_message = return_message+"Coordinates are outside the board dimension, PIN denied ";
             }
             if(valid){
+                Pin newPin = new Pin(coord_x, coord_y);
+                pinList.add(newPin);    
                 for(int i = 0; i < numNotes; i++){
                     Note current = noteList.get(i);
                     if(coord_x >= current.coord_x && coord_x <= current.width + current.coord_x){
                         if(coord_y >= current.coord_y && coord_x <= current.height + current.coord_y){
                             current.pinned = true;
+                            current.pins.add(newPin);
                             pinCount++;
-							current.pinCount++;
                         }
                     }
                 }
