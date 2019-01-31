@@ -28,6 +28,7 @@ class Note{
      int width;
      int height;
      boolean pinned;
+	 int pinCount;
 
         Note(String color, String message, int coord_x,int coord_y, int width, int height){
             this.color = color;
@@ -37,6 +38,7 @@ class Note{
             this.width = width;
             this.height = height;
             this.pinned = false;
+			this.pinCount = 0;
      }
  }
 
@@ -224,6 +226,7 @@ public class Server{
                         if(coord_y >= current.coord_y && coord_x <= current.height + current.coord_y){
                             current.pinned = true;
                             pinCount++;
+							current.pinCount++;
                         }
                     }
                 }
