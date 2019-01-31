@@ -105,7 +105,49 @@ public class Server{
          * and sending back the capitalized version of the string.
          */
 
+        public void run() {
+			
+            try {
+                // Decorate the streams so we can send characters
+                // and not just bytes.  Ensure output is flushed
+                // after every newline.
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
+                // Send a welcome message to the client.
+				for (int x = 0; x < colors.size();x++){
+					welcome_note = welcome_note + colors.get(x)+", ";
+				}
+				out.println(welcome_note);
+//                out.println("Enter a line with only a period to quit\n");
 
+                // Get messages from the client, line by line; return them
+                // capitalized
+                while (true) {
+                    String input = in.readLine();
+                    if (input == null || input.equals(".")) {
+                        break;
+                    }
+
+
+                    System.out.println(input.toUpperCase()); //changed this to print to stdout for testing I/O
+                    execute(input);
+
+
+                }
+            } catch (IOException e) {
+                log("Error handling client# " + clientNumber + ": " + e);
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    log("Couldn't close a socket, what's going on?");
+                }
+                log("Connection with client# " + clientNumber + " closed");
+            }
+        }
+		
         post(String msg[]){
             String color = msg[4];
             String message = msg[5];
@@ -145,50 +187,6 @@ public class Server{
             return;
 
 
-        }
-
-        public void run() {
-			
-            try {
-                // Decorate the streams so we can send characters
-                // and not just bytes.  Ensure output is flushed
-                // after every newline.
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
-                // Send a welcome message to the client.
-				for (int x = 0; x < colors.size();x++){
-					welcome_note = welcome_note + colors.get(x)+", ";
-				}
-				out.println(welcome_note);
-//                out.println("Enter a line with only a period to quit\n");
-
-                // Get messages from the client, line by line; return them
-                // capitalized
-                while (true) {
-                    String input = in.readLine();
-                    if (input == null || input.equals(".")) {
-                        break;
-                    }
-<<<<<<< HEAD
-					 out.println(input.toUpperCase());
-=======
-                    System.out.println(input.toUpperCase()); //changed this to print to stdout for testing I/O
-                    execute(input);
-
->>>>>>> cb2a81f14b4ee6adaae6cdc966a553df4526b87b
-                }
-            } catch (IOException e) {
-                log("Error handling client# " + clientNumber + ": " + e);
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    log("Couldn't close a socket, what's going on?");
-                }
-                log("Connection with client# " + clientNumber + " closed");
-            }
         }
 
         /**
