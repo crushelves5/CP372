@@ -10,7 +10,7 @@ public class Client {
 	
 //        System.out.println("Enter the IP address of a machine running the capitalize server:");
         String serverAddress = "localhost";//new Scanner(System.in).nextLine();
-        Socket socket = new Socket(serverAddress, 9898);
+        Socket socket = new Socket(serverAddress, 4554);
 
         // Streams for conversing with server
          BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
