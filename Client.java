@@ -10,14 +10,17 @@ public class Client {
 	
 //        System.out.println("Enter the IP address of a machine running the capitalize server:");
         String serverAddress = "localhost";//new Scanner(System.in).nextLine();
-        Socket socket = new Socket(serverAddress, 9898);
+        Socket socket = new Socket(serverAddress, 4554);
 
         // Streams for conversing with server
          BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
          PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
-        // Consume and display welcome message from the server
+        // Consume and display welcome message, and Available colors from server
         System.out.println(in.readLine());
+		System.out.println(in.readLine());
+		System.out.println(in.readLine());
+		//Dont touch this ^^
 
         Scanner scanner = new Scanner(System.in);
 		Scanner message_scan;
@@ -34,13 +37,14 @@ public class Client {
 				if (msg_valid){
 					//If valid, send message to server
 					out.println(message);
+					System.out.println(in.readLine());
 					}
 				else{System.out.println("Input has invalid form");}
 				
 			}
 			
           // out.println(message);
-           System.out.println(in.readLine());
+           //System.out.println(in.readLine());
 			
         }
     }
@@ -93,8 +97,9 @@ public class Client {
 		catch(Exception e){
 			//Errors mean the format is invalid
 		}
+		finally{
 		return valid;
-		
+		}
 		
 	}
 }

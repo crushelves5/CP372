@@ -5,7 +5,8 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-
+import java.util.LinkedList;
+import java.util.Scanner;
 /**
  * SOURCE:  http://cs.lmu.edu/~ray/notes/javanetexamples/
  *
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  * shut it down.
  */
 
- public class Note{
+class Note{
      String color;
      String message;
      int coord_x;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
      int height;
      boolean pinned;
 
-        Note(String color, String message, int corner, int width, int height){
+        Note(String color, String message, int coord_x,int coord_y, int width, int height){
             this.color = color;
             this.message = message;
             this.coord_x = coord_x;
@@ -40,13 +41,13 @@ import java.util.ArrayList;
  }
 
 public class Server{
-	public static LinkedList<Note> noteList = new LinkedList<Note>();
+	
 	private static int port;
 	private static int board_width;
 	private static int board_height;
 	private static String default_color;
-	private static ArrayList<String> colors = new ArrayList<String>();
-
+    private static ArrayList<String> colors = new ArrayList<String>();
+    public static LinkedList<Note> noteList = new LinkedList<Note>();
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -56,7 +57,7 @@ public class Server{
      * messages.  It is certainly not necessary to do this.
      */
     public static void main(String[] args) throws Exception {
-        System.out.println("The Note Board server is running.");
+
 		try{
 		port = Integer.parseInt(args[0]);
 		board_width = Integer.parseInt(args[1]);
@@ -69,7 +70,6 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
-
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -108,6 +108,8 @@ public class Server{
         public void run() {
 			
             try {
+				Scanner scan_msg;
+				String return_message;
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
@@ -122,17 +124,15 @@ public class Server{
 				out.println(welcome_note);
 //                out.println("Enter a line with only a period to quit\n");
 
-                // Get messages from the client, line by line; return them
-                // capitalized
+                // Get messages from the client, line by line;
                 while (true) {
                     String input = in.readLine();
                     if (input == null || input.equals(".")) {
                         break;
                     }
-
-
-                    System.out.println(input.toUpperCase()); //changed this to print to stdout for testing I/O
-                    execute(input);
+					scan_msg = new Scanner(input);
+					return_message = messageHandler(scan_msg);
+					out.println(return_message);
 
 
                 }
@@ -148,46 +148,75 @@ public class Server{
             }
         }
 		
-        post(String msg[]){
-            String color = msg[4];
-            String message = msg[5];
-            int corner = msg[1];
-            int width = msg[2];
-            int height = msg[3];
-            boolean pinned = 0;
-            Note newNote = new Note(color, message, corner, width, height, pinned);
-            noteList.add(newNote);
-        }
-
-        get(String msg[]){
-            
-        }
-
-        public int messageHandler(String msg){
-            
-            if(msg[0].compareTo("POST")){
-                post(msg);
-            }elif(msg[0].compareTo("GET"){
-                get(msg);
-            }elif(msg[0].compareTo("PIN"){
-                pin(msg);
-            }elif(msg[0].compareTo("UNPIN"){
-                unpin(msg);
-            }elif(msg[0].compareTo("CLEAR"){
-                clear();
-            }elif(msg[0].compareTo("DISCONNECT"){
-                disconnect(msg);
+        public String messageHandler(Scanner msg_scan){
+            String msg = msg_scan.next();
+			String return_message = "";
+			//Compare the command then pass in the rest of the message to the appropriate function
+            if(msg.equals("POST")){
+               return_message = post(msg_scan.nextLine());
+            }else if(msg.equals("GET")){
+                //get(msg);
+            }else if(msg.equals("PIN")){
+                //pin(msg);
+            }else if(msg.equals("UNPIN")){
+                //unpin(msg);
+            }else if(msg.equals("CLEAR")){
+                //clear();
             }
+			
+			return return_message;
         }
 
-        public void execute(String input){
-            String msg[];
-            msg = input.split(" ");
-            messageHandler(msg);
-            return;
-
-
+        public String post(String msg){
+			String return_message = "";
+			boolean valid = true;
+			boolean color_match = false;
+			Scanner msg_scan = new Scanner(msg);
+			int coord_x = msg_scan.nextInt();
+			int coord_y = msg_scan.nextInt();
+			int width = msg_scan.nextInt();
+			int height = msg_scan.nextInt();
+            String color = msg_scan.next();
+			String message = msg_scan.nextLine();
+			if(coord_x > board_width || coord_y > board_height){
+				valid = false;
+				return_message = return_message+"Coordinates are outside the board dimension, POST denied ";
+			}
+			for(int x = 0; x< colors.size();x++){
+				if (color.equals(colors.get(x))){
+					color_match = true;
+				}
+			}
+			if(!color_match){
+				color = default_color;
+			}
+			if(valid){
+            Note newNote = new Note(color, message, coord_x, coord_y, width, height);
+            noteList.add(newNote);
+			return_message ="POST message success";
+			}
+			return return_message;
+			
         }
+
+        public String get(String msg){
+            return null;
+        }
+
+        public String pin(String msg){
+			return null;
+        }
+        public String unpin(String msg){
+return null;
+        }
+        public String clear(String msg){
+return null;
+        }
+        public String disconnect(String msg){
+return null;
+        }
+
+
 
         /**
          * Logs a simple message.  In this case we just write the
