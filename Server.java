@@ -173,7 +173,7 @@ public class Server{
             }else if(msg.equals("UNPIN")){
                 //unpin(msg);
             }else if(msg.equals("CLEAR")){
-                //clear();
+                return_message =clear();
             }
 			
 			return return_message;
@@ -269,11 +269,20 @@ public class Server{
         public String unpin(String msg){
 return null;
         }
-        public String clear(String msg){
-return null;
-        }
-        public String disconnect(String msg){
-return null;
+        public String clear(){
+		String return_message;
+		int noteCount = 0;
+		int x = 0;
+		while(x < noteList.size()){
+			if(noteList.get(x).pinned == false){
+				noteList.remove(x);
+				noteCount++;
+			}
+			else{
+				x++;
+			}
+		}
+		return_message = noteCount+" note(s) have been cleared";
         }
 
 
