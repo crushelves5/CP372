@@ -37,7 +37,7 @@ class Note{
      int width;
      int height;
      boolean pinned;
-     private static LinkedList<Pin> pins = new LinkedList<Pin>();
+     public LinkedList<Pin> pins;
 
         Note(String color, String message, int coord_x,int coord_y, int width, int height){
             this.color = color;
@@ -46,7 +46,8 @@ class Note{
 			this.coord_y = coord_y;
             this.width = width;
             this.height = height;
-            this.pinned = false;			
+            this.pinned = false;
+            this.pins = new LinkedList<Pin>();	
      }
  }
 
@@ -205,7 +206,8 @@ public class Server{
             Note newNote = new Note(color, message, coord_x, coord_y, width, height);
             noteList.add(newNote);
 			return_message ="POST message success";
-			}
+            }
+            
 			return return_message;
 			
         }
@@ -233,7 +235,7 @@ public class Server{
                 for(int i = 0; i < numNotes; i++){
                     Note current = noteList.get(i);
                     if(coord_x >= current.coord_x && coord_x <= current.width + current.coord_x){
-                        if(coord_y >= current.coord_y && coord_x <= current.height + current.coord_y){
+                        if(coord_y >= current.coord_y && coord_y <= current.height + current.coord_y){
                             current.pinned = true;
                             current.pins.add(newPin);
                             pinCount++;
@@ -245,7 +247,22 @@ public class Server{
                 }else{
                     return_message = "" +pinCount + " message(s) have been pinned."; 
                 }
-            }   
+            }
+            //test pins
+            // for(int i = 0; i < numNotes; i++){
+            //     Note current = noteList.get(i);
+            //     for(int j = 0; j < current.pins.size(); j++){
+            //         Pin currentPin = current.pins.get(j);
+                    
+            //         System.out.printf("Note: %d, Pin %d: (%d, %d)\n", i, j, currentPin.x, currentPin.y);
+
+            //     }
+            // }
+            // for(int i = 0; i < pinList.size(); i++){
+            //     Pin currentPin = pinList.get(i);
+            //     System.out.printf("Global Pin %d: (%d, %d)\n", i, currentPin.x, currentPin.y);
+                
+            // }   
 
 			return return_message;
         }
