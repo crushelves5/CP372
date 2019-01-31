@@ -57,28 +57,6 @@ public class Server{
      */
     public static void main(String[] args) throws Exception {
         System.out.println("The Note Board server is running.");
-        int portNum = 9898;
-        int boardWidth = 100;
-        int boardHeight = 100;
-        
-
-        if(args.length > 0){
-            portNum = args[0];
-            boardWidth = args[1];
-            boardHeight = args[2];
-            if(args.length > 2){
-                String colors = new String[args.length-2];
-                for(int i = 3; i < args.length; i++);
-                    colors[i-3] = args[i];
-            }
-
-        }else{
-            //Default values.
-            int clientNumber = 0;
-            ServerSocket listener = new ServerSocket(portNum);
-        
-        }
-
 		try{
 		port = Integer.parseInt(args[0]);
 		board_width = Integer.parseInt(args[1]);
