@@ -19,7 +19,7 @@ import java.util.LinkedList;
  * shut it down.
  */
 
- public class Note{
+class Note{
      String color;
      String message;
      int coord_x;
@@ -40,7 +40,7 @@ import java.util.LinkedList;
  }
 
 public class Server{
-	public static LinkedList<Note> noteList = new LinkedList<Note>();
+	
 	private static int port;
 	private static int board_width;
 	private static int board_height;
@@ -69,10 +69,6 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
-<<<<<<< HEAD
-=======
-
->>>>>>> 42ed78e2b66a2e1a22dfa59d0cf9acdb7c273ef1
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -116,7 +112,7 @@ public class Server{
             int width = Integer.parseInt(msg[2]);
             int height = Integer.parseInt(msg[3]);
             boolean pinned = false;
-            Note newNote = new Note(color, message, corner, width, height, pinned);
+            Note newNote = new Note(color, message, corner, width, height);
             noteList.add(newNote);
         }
 
