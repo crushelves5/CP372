@@ -19,12 +19,35 @@ import java.util.ArrayList;
  * shut it down.
  */
 
+<<<<<<< HEAD:SBoard.java
+ public class Note{
+     String color;
+     String message;
+     int corner;
+     int width;
+     int height;
+     boolean pinned;
+
+        Note(String color, String message, int corner, int width, int height, int pinned){
+            this.color = color;
+            this.message = message;
+            this.corner = corner;
+            this.width = width;
+            this.height = height;
+            this.pinned = pinned;
+     }
+ }
+
+public class SBoard{
+    public static LinkedList<Note> noteList = new LinkedList<Note>();
+=======
 public class Server{
 	private static int port;
 	private static int board_width;
 	private static int board_height;
 	private static String default_color;
 	private static ArrayList<String> colors = new ArrayList<String>();
+>>>>>>> 366b8e70d413f611bbf33a8ccf5d25697e247732:Server.java
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -34,6 +57,30 @@ public class Server{
      * messages.  It is certainly not necessary to do this.
      */
     public static void main(String[] args) throws Exception {
+<<<<<<< HEAD:SBoard.java
+        System.out.println("The Note Board server is running.");
+        int portNum = 9898;
+        int boardWidth = 100;
+        int boardHeight = 100;
+        
+
+        if(args.length > 0){
+            portNum = args[0];
+            boardWidth = args[1];
+            boardHeight = args[2];
+            if(args.length > 2){
+                String colors = new String[args.length-2];
+                for(int i = 3; i < args.length; i++);
+                    colors[i-3] = args[i];
+            }
+
+        }else{
+            //Default values.
+            int clientNumber = 0;
+            ServerSocket listener = new ServerSocket(portNum);
+        
+        }
+=======
 		try{
 		port = Integer.parseInt(args[0]);
 		board_width = Integer.parseInt(args[1]);
@@ -46,6 +93,7 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
+>>>>>>> 366b8e70d413f611bbf33a8ccf5d25697e247732:Server.java
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -80,6 +128,49 @@ public class Server{
          * client a welcome message then repeatedly reading strings
          * and sending back the capitalized version of the string.
          */
+
+
+        post(String msg[]){
+            String color = msg[4];
+            String message = msg[5];
+            int corner = msg[1];
+            int width = msg[2];
+            int height = msg[3];
+            boolean pinned = 0;
+            Note newNote = new Note(color, message, corner, width, height, pinned);
+            noteList.add(newNote);
+        }
+
+        get(String msg[]){
+            
+        }
+
+        public int messageHandler(String msg){
+            
+            if(msg[0].compareTo("POST")){
+                post(msg);
+            }elif(msg[0].compareTo("GET"){
+                get(msg);
+            }elif(msg[0].compareTo("PIN"){
+                pin(msg);
+            }elif(msg[0].compareTo("UNPIN"){
+                unpin(msg);
+            }elif(msg[0].compareTo("CLEAR"){
+                clear();
+            }elif(msg[0].compareTo("DISCONNECT"){
+                disconnect(msg);
+            }
+        }
+
+        public void execute(String input){
+            String msg[];
+            msg = input.split(" ");
+            messageHandler(msg);
+            return;
+
+
+        }
+
         public void run() {
 			
             try {
@@ -104,7 +195,13 @@ public class Server{
                     if (input == null || input.equals(".")) {
                         break;
                     }
+<<<<<<< HEAD
 					 out.println(input.toUpperCase());
+=======
+                    System.out.println(input.toUpperCase()); //changed this to print to stdout for testing I/O
+                    execute(input);
+
+>>>>>>> cb2a81f14b4ee6adaae6cdc966a553df4526b87b
                 }
             } catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
