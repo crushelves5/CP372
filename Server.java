@@ -19,35 +19,34 @@ import java.util.ArrayList;
  * shut it down.
  */
 
-<<<<<<< HEAD:SBoard.java
  public class Note{
      String color;
      String message;
-     int corner;
+     int coord_x;
+	 int coord_y;
      int width;
      int height;
      boolean pinned;
 
-        Note(String color, String message, int corner, int width, int height, int pinned){
+        Note(String color, String message, int corner, int width, int height){
             this.color = color;
             this.message = message;
-            this.corner = corner;
+            this.coord_x = coord_x;
+			this.coord_y = coord_y;
             this.width = width;
             this.height = height;
-            this.pinned = pinned;
+            this.pinned = false;
      }
  }
 
-public class SBoard{
-    public static LinkedList<Note> noteList = new LinkedList<Note>();
-=======
 public class Server{
+	public static LinkedList<Note> noteList = new LinkedList<Note>();
 	private static int port;
 	private static int board_width;
 	private static int board_height;
 	private static String default_color;
 	private static ArrayList<String> colors = new ArrayList<String>();
->>>>>>> 366b8e70d413f611bbf33a8ccf5d25697e247732:Server.java
+
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -57,7 +56,6 @@ public class Server{
      * messages.  It is certainly not necessary to do this.
      */
     public static void main(String[] args) throws Exception {
-<<<<<<< HEAD:SBoard.java
         System.out.println("The Note Board server is running.");
         int portNum = 9898;
         int boardWidth = 100;
@@ -80,7 +78,7 @@ public class Server{
             ServerSocket listener = new ServerSocket(portNum);
         
         }
-=======
+
 		try{
 		port = Integer.parseInt(args[0]);
 		board_width = Integer.parseInt(args[1]);
@@ -93,7 +91,7 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
->>>>>>> 366b8e70d413f611bbf33a8ccf5d25697e247732:Server.java
+
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
