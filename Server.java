@@ -171,7 +171,7 @@ public class Server{
             }else if(msg.equals("PIN")){
                 return_message = pin(msg_scan.nextLine());
             }else if(msg.equals("UNPIN")){
-                //unpin(msg);
+                return_message = unpin(msg_scan.nextLine());
             }else if(msg.equals("CLEAR")){
                 return_message =clear();
             }
@@ -267,8 +267,46 @@ public class Server{
 			return return_message;
         }
         public String unpin(String msg){
-return null;
+            String return_message = "";
+            Scanner msg_scan = new Scanner(msg);
+            int coord_x = msg_scan.nextInt();
+            int coord_y = msg_scan.nextInt();
+            boolean valid = true;
+            boolean unpinned = false;
+            int unpinnedCount = 0;
+
+            if(coord_x > board_width || coord_y > board_height){
+				valid = false;
+				return_message = return_message+"Coordinates are outside the board dimension, UNPIN denied ";
+            }
+
+            if(valid){
+                for(int i = 0; i < noteList.size(); i++){
+                    Note current = noteList.get(i);
+                    for(int j = 0; j < current.pins.size(); j++){
+                        Pin currentPin = current.pins.get(j);
+                        if(currentPin.x == coord_x && currentPin.y == coord_y){
+                            System.out.printf("removed pin %d at (%d, %d)\n", j, currentPin.x, currentPin.y);
+                            current.pins.remove(j);
+                            unpinnedCount++;
+                            unpinned = true;
+                            j--; // decrement j if found based on linkedlist accounting for deletion
+                            if(current.pins.size() == 0){
+                                current.pinned = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(unpinned){
+                return_message = return_message + unpinnedCount + " pin(s) were removed.";
+            }else{
+                return_message = return_message+"No pins were found at this position.";
+            }
+            return return_message;
         }
+
         public String clear(){
 		String return_message;
 		int noteCount = 0;
