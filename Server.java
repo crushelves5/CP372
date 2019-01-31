@@ -81,8 +81,8 @@ public class Server{
          * and sending back the capitalized version of the string.
          */
         public void run() {
+			
             try {
-
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
@@ -104,7 +104,7 @@ public class Server{
                     if (input == null || input.equals(".")) {
                         break;
                     }
-                    out.println(input.toUpperCase());
+					 out.println(input.toUpperCase());
                 }
             } catch (IOException e) {
                 log("Error handling client# " + clientNumber + ": " + e);
