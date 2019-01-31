@@ -282,7 +282,7 @@ return null;
 				x++;
 			}
 		}
-		return_message = noteCount+" note(s) have been cleared";
+		return return_message = noteCount+" note(s) have been cleared";
         }
 
 
