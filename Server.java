@@ -157,7 +157,7 @@ public class Server{
             }else if(msg.equals("GET")){
                 //get(msg);
             }else if(msg.equals("PIN")){
-                //pin(msg);
+                return_message = pin(msg_scan.nextLine());
             }else if(msg.equals("UNPIN")){
                 //unpin(msg);
             }else if(msg.equals("CLEAR")){
@@ -204,7 +204,37 @@ public class Server{
         }
 
         public String pin(String msg){
-			return null;
+            String return_message = "";
+            Scanner msg_scan = new Scanner(msg);
+            boolean valid = true;
+            int numNotes = noteList.size();
+            int pinCount = 0;
+            int coord_x = msg_scan.nextInt();
+            int coord_y = msg_scan.nextInt();
+            
+
+            if(coord_x > board_width || coord_y > board_height){
+				valid = false;
+				return_message = return_message+"Coordinates are outside the board dimension, PIN denied ";
+            }
+            if(valid){
+                for(int i = 0; i < numNotes; i++){
+                    Note current = noteList.get(i);
+                    if(coord_x >= current.coord_x && coord_x <= current.width + current.coord_x){
+                        if(coord_y >= current.coord_y && coord_x <= current.height + current.coord_y){
+                            current.pinned = true;
+                            pinCount++;
+                        }
+                    }
+                }
+                if(pinCount < 1){
+                    return_message = "No notes were pinned at position (" + coord_x + ", " + coord_y + ").";
+                }else{
+                    return_message = "" +pinCount + " message(s) have been pinned."; 
+                }
+            }   
+
+			return return_message;
         }
         public String unpin(String msg){
 return null;
