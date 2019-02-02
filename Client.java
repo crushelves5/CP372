@@ -9,11 +9,13 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
+import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
+import java.awt.Choice;
 class Dashboard {
 	/**
 	 * Create the Dashboard
@@ -32,6 +34,7 @@ class Dashboard {
 		JButton btnPost = new JButton("POST");
 		btnPost.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.openPost();
 			}
 		});
 		btnPost.setBounds(65, 11, 89, 23);
@@ -40,6 +43,7 @@ class Dashboard {
 		JButton btnGet = new JButton("GET");
 		btnGet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.openGet();
 			}
 		});
 		btnGet.setBounds(65, 45, 89, 23);
@@ -48,6 +52,7 @@ class Dashboard {
 		JButton btnPin = new JButton("PIN");
 		btnPin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.openPin();
 			}
 		});
 		btnPin.setBounds(65, 79, 89, 23);
@@ -56,6 +61,7 @@ class Dashboard {
 		JButton btnUnpin = new JButton("UNPIN");
 		btnUnpin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.openUnpin();
 			}
 		});
 		btnUnpin.setBounds(65, 113, 89, 23);
@@ -64,6 +70,7 @@ class Dashboard {
 		JButton btnClear = new JButton("CLEAR");
 		btnClear.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.clear();
 			}
 		});
 		btnClear.setBounds(65, 147, 89, 23);
@@ -76,6 +83,7 @@ class Dashboard {
 		JButton btnDisconnect = new JButton("DISCONNECT");
 		btnDisconnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				Client.disconnect();
 			}
 		});
 		btnDisconnect.setBounds(53, 206, 114, 33);
@@ -150,7 +158,259 @@ class Window {
 		frame.getContentPane().add(lbllocalhost);
 	}
 }
+class Unpin {
 
+	public JFrame frame;
+	private JTextField xField;
+	private JTextField yField;
+
+
+
+	/**
+	 * Create the application.
+	 */
+	public Unpin() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 363, 134);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblXCoordinate = new JLabel("X");
+		lblXCoordinate.setBounds(77, 67, 17, 14);
+		frame.getContentPane().add(lblXCoordinate);
+		
+		xField = new JTextField();
+		xField.setBounds(49, 36, 60, 20);
+		frame.getContentPane().add(xField);
+		xField.setColumns(10);
+		
+		JLabel label = new JLabel(",");
+		label.setBounds(110, 50, 17, 14);
+		frame.getContentPane().add(label);
+		
+		yField = new JTextField();
+		yField.setColumns(10);
+		yField.setBounds(120, 36, 60, 20);
+		frame.getContentPane().add(yField);
+		
+		JLabel lblY = new JLabel("Y");
+		lblY.setBounds(148, 67, 17, 14);
+		frame.getContentPane().add(lblY);
+		
+		JButton btnUnpin = new JButton("UNPIN");
+		btnUnpin.setBounds(219, 35, 89, 23);
+		frame.getContentPane().add(btnUnpin);
+				btnUnpin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			Client.unpin(xField.getText(),yField.getText());
+				
+			}
+		});
+	}
+
+}
+class Pin {
+
+	public JFrame frame;
+	private JTextField xField;
+	private JTextField yField;
+
+
+	/**
+	 * Create the application.
+	 */
+	public Pin() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 363, 134);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblXCoordinate = new JLabel("X");
+		lblXCoordinate.setBounds(77, 67, 17, 14);
+		frame.getContentPane().add(lblXCoordinate);
+		
+		xField = new JTextField();
+		xField.setBounds(49, 36, 60, 20);
+		frame.getContentPane().add(xField);
+		xField.setColumns(10);
+		
+		JLabel label = new JLabel(",");
+		label.setBounds(110, 50, 17, 14);
+		frame.getContentPane().add(label);
+		
+		yField = new JTextField();
+		yField.setColumns(10);
+		yField.setBounds(120, 36, 60, 20);
+		frame.getContentPane().add(yField);
+		
+		JLabel lblY = new JLabel("Y");
+		lblY.setBounds(148, 67, 17, 14);
+		frame.getContentPane().add(lblY);
+		
+		JButton btnPin = new JButton("PIN");
+		btnPin.setBounds(219, 35, 89, 23);
+		frame.getContentPane().add(btnPin);
+		btnPin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			Client.pin(xField.getText(),yField.getText());
+				
+			}
+		});
+	}
+
+}
+class Post {
+
+	public JFrame frame;
+	private JTextField xField;
+	private JTextField yField;
+	private JTextField widthField;
+	private JTextField heightField;
+
+	/**
+	 * Create the application.
+	 */
+	public Post() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 306, 492);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblXCoordinate = new JLabel("X coordinate");
+		lblXCoordinate.setBounds(10, 11, 78, 23);
+		frame.getContentPane().add(lblXCoordinate);
+		
+		xField = new JTextField();
+		xField.setBounds(93, 12, 86, 20);
+		frame.getContentPane().add(xField);
+		xField.setColumns(10);
+		
+		JLabel lblYCoordinate = new JLabel("Y coordinate");
+		lblYCoordinate.setBounds(10, 45, 78, 23);
+		frame.getContentPane().add(lblYCoordinate);
+		
+		yField = new JTextField();
+		yField.setColumns(10);
+		yField.setBounds(93, 46, 86, 20);
+		frame.getContentPane().add(yField);
+		
+		JLabel lblW = new JLabel("Note Width");
+		lblW.setBounds(10, 79, 78, 23);
+		frame.getContentPane().add(lblW);
+		
+		widthField = new JTextField();
+		widthField.setColumns(10);
+		widthField.setBounds(93, 80, 86, 20);
+		frame.getContentPane().add(widthField);
+		
+		JLabel lblNoteHeight = new JLabel("Note Height");
+		lblNoteHeight.setBounds(10, 113, 78, 23);
+		frame.getContentPane().add(lblNoteHeight);
+		
+		heightField = new JTextField();
+		heightField.setColumns(10);
+		heightField.setBounds(93, 114, 86, 20);
+		frame.getContentPane().add(heightField);
+		
+		JLabel lblColor = new JLabel("Color");
+		lblColor.setBounds(10, 147, 78, 23);
+		frame.getContentPane().add(lblColor);
+		
+		Choice colors = new Choice();
+		colors.setBounds(93, 150, 180, 20);
+		frame.getContentPane().add(colors);
+		
+		JTextArea messageField = new JTextArea();
+		messageField.setBounds(10, 181, 265, 193);
+		frame.getContentPane().add(messageField);
+		
+		JButton btnPost = new JButton("POST");
+		btnPost.setBounds(106, 400, 89, 23);
+		frame.getContentPane().add(btnPost);
+	}
+}
+class Get {
+
+	public JFrame frame;
+	private JTextField colorField;
+	private JTextField containsField;
+	private JTextField refersField;
+
+
+	/**
+	 * Create the application.
+	 */
+	public Get() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 436, 194);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblColor = new JLabel("color");
+		lblColor.setBounds(42, 28, 68, 14);
+		frame.getContentPane().add(lblColor);
+		
+		colorField = new JTextField();
+		colorField.setBounds(109, 25, 131, 20);
+		frame.getContentPane().add(colorField);
+		colorField.setColumns(10);
+		
+		JLabel lblContains = new JLabel("contains");
+		lblContains.setBounds(42, 69, 68, 14);
+		frame.getContentPane().add(lblContains);
+		
+		containsField = new JTextField();
+		containsField.setColumns(10);
+		containsField.setBounds(109, 66, 131, 20);
+		frame.getContentPane().add(containsField);
+		
+		JLabel lblRefersto = new JLabel("refersTo");
+		lblRefersto.setBounds(42, 109, 46, 14);
+		frame.getContentPane().add(lblRefersto);
+		
+		refersField = new JTextField();
+		refersField.setColumns(10);
+		refersField.setBounds(109, 106, 131, 20);
+		frame.getContentPane().add(refersField);
+		
+		JButton btnGet = new JButton("GET");
+		btnGet.setBounds(288, 28, 89, 39);
+		frame.getContentPane().add(btnGet);
+		
+		JButton btnGetPins = new JButton("GET PINS");
+		btnGetPins.setBounds(288, 84, 89, 39);
+		frame.getContentPane().add(btnGetPins);
+	}
+
+}
 
 
 public class Client {
@@ -159,6 +419,11 @@ public class Client {
 	static BufferedReader in;
     static PrintWriter out; 
 	public static Window connect_window;
+	public static Dashboard dashboard;
+	public static Pin pin_window;
+	public static Unpin unpin_window;
+	public static Post post_window;
+	public static Get get_window;
     public static void main(String[] args) throws Exception {
 	
     EventQueue.invokeLater(new Runnable() {
@@ -216,17 +481,110 @@ public class Client {
 		return success;
 	}
 	
+	public static void openPin(){
+			
+		    EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					pin_window = new Pin();
+					pin_window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public static void openUnpin(){
+				    EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					unpin_window = new Unpin();
+					unpin_window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public static void openPost(){
+			 EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					post_window = new Post();
+					post_window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	public static void openGet(){
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					get_window = new Get();
+					get_window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	public static void pin(String x, String y){
+		int coord_x = Integer.parseInt(x);
+		int coord_y = Integer.parseInt(y);
+		try{
+			if(coord_x >= 0 && coord_y >= 0){
+				out.println("PIN "+x+" "+y);
+				dashboard.responseField.append(in.readLine()+"\n");
+			}
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(dashboard.frame, "Invalid Input");
+		}
+	}
+	public static void unpin(String x, String y){
+		int coord_x = Integer.parseInt(x);
+		int coord_y = Integer.parseInt(y);
+		try{
+			if(coord_x >= 0 && coord_y >= 0){
+				out.println("UNPIN "+x+" "+y);
+				dashboard.responseField.append(in.readLine()+"\n");
+			}
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(dashboard.frame, "Invalid Input");
+		}
+	}
+	
+	public static void clear(){
+		out.println("CLEAR");
+		try{
+		dashboard.responseField.append(in.readLine()+"\n");
+		}
+		catch(Exception e){
+			
+		}
+	}
+	public static void disconnect(){
+		out.println("DISCONNECT");
+		System.exit(0);
+	}
+	
 	public static void welcome_message(){
 		// Consume and display welcome message, and Available colors from server
 		
 		    EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					Dashboard window = new Dashboard();
-					window.responseField.append(in.readLine()+"\n");
-					window.responseField.append(in.readLine()+"\n");
-					window.responseField.append(in.readLine()+"\n");
-					window.frame.setVisible(true);
+					dashboard = new Dashboard();
+					dashboard.responseField.append(in.readLine()+"\n");
+					dashboard.responseField.append(in.readLine()+"\n");
+					dashboard.responseField.append(in.readLine()+"\n");
+					dashboard.frame.setVisible(true);
 					connect_window.frame.setVisible(false);
 				} catch (Exception e) {
 					e.printStackTrace();
