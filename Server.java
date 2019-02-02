@@ -284,7 +284,8 @@ public class Server{
             }
             if(valid){
                 Pin newPin = new Pin(coord_x, coord_y);
-                pinList.add(newPin);    
+                pinList.add(newPin);
+                return_message = return_message + "Pin placed, ";    
                 for(int i = 0; i < numNotes; i++){
                     Note current = noteList.get(i);
                     if(coord_x >= current.coord_x && coord_x <= current.width + current.coord_x){
@@ -296,9 +297,9 @@ public class Server{
                     }
                 }
                 if(pinCount < 1){
-                    return_message = "No notes were pinned at position (" + coord_x + ", " + coord_y + ").";
+                    return_message = return_message + "no notes were pinned at position (" + coord_x + ", " + coord_y + ").";
                 }else{
-                    return_message = "" +pinCount + " message(s) have been pinned."; 
+                    return_message = return_message + "" +pinCount + " message(s) have been pinned."; 
                 }
             }
             //test pins
@@ -334,20 +335,28 @@ public class Server{
             }
 
             if(valid){
-                for(int i = 0; i < noteList.size(); i++){
-                    Note current = noteList.get(i);
-                    for(int j = 0; j < current.pins.size(); j++){
-                        Pin currentPin = current.pins.get(j);
-                        if(currentPin.x == coord_x && currentPin.y == coord_y){
-                            System.out.printf("removed pin %d at (%d, %d)\n", j, currentPin.x, currentPin.y);
-                            current.pins.remove(j);
-                            unpinnedCount++;
-                            unpinned = true;
-                            j--; // decrement j if found based on linkedlist accounting for deletion
-                            if(current.pins.size() == 0){
-                                current.pinned = false;
+                for(int i = 0; i < pinList.size(); i++){
+                    Pin currentPin = pinList.get(i);
+                    if(currentPin.x == coord_x && currentPin.y == coord_y){
+                        //remove this pin
+                        unpinned = true;
+                        unpinnedCount++;
+                        for(int j = 0; j < noteList.size(); j++){
+                            Note currentNote = noteList.get(j);
+                            for(int k = 0; k < currentNote.pins.size(); k++){
+                                Pin notePin = currentNote.pins.get(k);
+                                if(notePin.x == coord_x && notePin.y == coord_y){
+                                    currentNote.pins.remove(k);
+                                    
+                                    k--; //decrement k if removing pin for LinkedList
+                                    if(currentNote.pins.size() == 0){
+                                        currentNote.pinned = false;
+                                    }
+                                }
                             }
                         }
+                    pinList.remove(i);
+                    i--; // decrement i for linkedlist
                     }
                 }
             }
