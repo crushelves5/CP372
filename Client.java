@@ -4,23 +4,175 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.awt.EventQueue;
+import javax.swing.JFrame;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextPane;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.JTextArea;
+import java.awt.BorderLayout;
+import javax.swing.JTextField;
+class Dashboard {
+	/**
+	 * Create the Dashboard
+	 */
+	public JFrame frame;
+	public JTextArea responseField;
+	public Dashboard() {
+		initialize();
+	}
+		private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 560, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JButton btnPost = new JButton("POST");
+		btnPost.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnPost.setBounds(65, 11, 89, 23);
+		frame.getContentPane().add(btnPost);
+		
+		JButton btnGet = new JButton("GET");
+		btnGet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnGet.setBounds(65, 45, 89, 23);
+		frame.getContentPane().add(btnGet);
+		
+		JButton btnPin = new JButton("PIN");
+		btnPin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnPin.setBounds(65, 79, 89, 23);
+		frame.getContentPane().add(btnPin);
+		
+		JButton btnUnpin = new JButton("UNPIN");
+		btnUnpin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnUnpin.setBounds(65, 113, 89, 23);
+		frame.getContentPane().add(btnUnpin);
+		
+		JButton btnClear = new JButton("CLEAR");
+		btnClear.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnClear.setBounds(65, 147, 89, 23);
+		frame.getContentPane().add(btnClear);
+		
+		JLabel lblServerResponse = new JLabel("Server Response");
+		lblServerResponse.setBounds(308, 15, 103, 14);
+		frame.getContentPane().add(lblServerResponse);
+		
+		JButton btnDisconnect = new JButton("DISCONNECT");
+		btnDisconnect.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+		btnDisconnect.setBounds(53, 206, 114, 33);
+		frame.getContentPane().add(btnDisconnect);
+		
+		responseField = new JTextArea();
+		responseField.setEditable(false);
+		responseField.setBounds(191, 44, 326, 195);
+		frame.getContentPane().add(responseField);
+	}
+}
+
+class Window {
+
+	public JFrame frame;
+	private JTextField addressField;
+	private JTextField portField;
+
+	/**
+	 * Create the application.
+	 */
+	public Window() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 507, 145);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setLayout(null);
+		
+		JLabel lblNewLabel = new JLabel("Server Address");
+		lblNewLabel.setBounds(16, 0, 100, 37);
+		frame.getContentPane().add(lblNewLabel);
+		
+		JLabel lblNewLabel_1 = new JLabel("Port Number");
+		lblNewLabel_1.setBounds(16, 48, 100, 23);
+		frame.getContentPane().add(lblNewLabel_1);
+		
+		addressField = new JTextField();
+		addressField.setBounds(110, 8, 112, 23);
+		frame.getContentPane().add(addressField);
+		addressField.setColumns(20);
+		
+		portField = new JTextField();
+		portField.setBounds(110, 46, 112, 23);
+		frame.getContentPane().add(portField);
+		portField.setColumns(10);
+		
+		JButton btnNewButton = new JButton("Connect");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//CONNECT TO SERVER
+				String address = addressField.getText();
+				int port = Integer.parseInt(portField.getText());
+				String success = Client.connect(address,port);
+				if(success.equals("SUCCESS")){
+					Client.welcome_message();
+					
+				}
+				
+			}
+		});
+		btnNewButton.setBounds(245, 48, 129, 45);
+		frame.getContentPane().add(btnNewButton);
+		
+		JLabel lbllocalhost = new JLabel("(localhost if server is on the same machine)");
+		lbllocalhost.setBounds(222, 11, 300, 26);
+		frame.getContentPane().add(lbllocalhost);
+	}
+}
+
+
 
 public class Client {
+	static String serverAddress;
+	static Socket socket;
+	static BufferedReader in;
+    static PrintWriter out; 
+	public static Window connect_window;
     public static void main(String[] args) throws Exception {
 	
-//        System.out.println("Enter the IP address of a machine running the capitalize server:");
-        String serverAddress = "localhost";//new Scanner(System.in).nextLine();
-        Socket socket = new Socket(serverAddress, 4554);
+    EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					connect_window = new Window();
+					connect_window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+		
 
-        // Streams for conversing with server
-         BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-
-        // Consume and display welcome message, and Available colors from server
-        System.out.println(in.readLine());
-		System.out.println(in.readLine());
-		System.out.println(in.readLine());
-		//Dont touch this ^^
 
         Scanner scanner = new Scanner(System.in);
 		Scanner message_scan;
@@ -29,6 +181,7 @@ public class Client {
             String message = scanner.nextLine();
 			message_scan = new Scanner(message);
             if (message.equals("DISCONNECT")) {//disconnect from server and client session ends
+			out.println("DISCONNECT");
                 break;
             }
 			else{
@@ -48,6 +201,40 @@ public class Client {
 			
         }
     }
+	
+	public static String connect(String addrs, int port_num){
+		String success = "SUCCESS";
+		try{
+		serverAddress = addrs;
+		socket = new Socket(addrs,port_num);
+		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		out = new PrintWriter(socket.getOutputStream(), true);
+		}
+		catch(Exception e){
+			success ="Unable to Connect, Invalid input try again";
+		}
+		return success;
+	}
+	
+	public static void welcome_message(){
+		// Consume and display welcome message, and Available colors from server
+		
+		    EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Dashboard window = new Dashboard();
+					window.responseField.append(in.readLine()+"\n");
+					window.responseField.append(in.readLine()+"\n");
+					window.responseField.append(in.readLine()+"\n");
+					window.frame.setVisible(true);
+					connect_window.frame.setVisible(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+      
+	}
 	
 	public static boolean CheckMessage(Scanner msg_scan){
 		boolean valid = false;
@@ -93,6 +280,7 @@ public class Client {
 		else if(type.equals("CLEAR")){
 			valid = true;
 		}
+		
 		}
 		catch(Exception e){
 			//Errors mean the format is invalid
