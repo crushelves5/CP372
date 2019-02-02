@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.Queue;
 /**
  * SOURCE:  http://cs.lmu.edu/~ray/notes/javanetexamples/
  *
@@ -60,6 +61,8 @@ public class Server{
     private static ArrayList<String> colors = new ArrayList<String>();
     public static LinkedList<Note> noteList = new LinkedList<Note>();
     public static LinkedList<Pin> pinList = new LinkedList<Pin>();
+    Queue<String> q = new LinkedList<String>();
+    
     /**
      * Application method to run the server runs in an infinite loop
      * listening on port 9898.  When a connection is requested, it
@@ -82,6 +85,12 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
+        try{
+            new RequestHandler(listener.accept()).start();
+        }catch(Exception e){
+            System.out.println("Server request cant initiate");
+        }
+
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -101,6 +110,29 @@ public class Server{
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
+
+    public static class RequestHandler extends Thread{
+        
+
+        public void run(Socket socket){
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            String return_message;
+            Scanner scan_msg;
+            try{
+                while(true){
+                    if(q.peek() != null){
+                        messageHandler(q.pop());
+                        scan_msg = new Scanner(q.pop());
+                        return_message = messageHandler(scan_msg, out);
+                        out.println(return_message);
+                    }
+                }
+            }catch(Exception e){
+                System.out.println("ran into error with requesthandler");
+            }
+        }
+    }
+
     private static class Client extends Thread {
         private Socket socket;
         private int clientNumber;
@@ -121,7 +153,8 @@ public class Server{
 			
             try {
 				Scanner scan_msg;
-				String return_message;
+                String return_message;
+                
                 // Decorate the streams so we can send characters
                 // and not just bytes.  Ensure output is flushed
                 // after every newline.
@@ -142,10 +175,11 @@ public class Server{
                     if (input == null || input.equals(".")) {
                         break;
                     }
-					scan_msg = new Scanner(input);
-					return_message = messageHandler(scan_msg, out);
-					out.println(return_message);
+                    
 
+                    q.push(input);
+
+                
 
                 }
             } catch (IOException e) {
@@ -284,7 +318,8 @@ public class Server{
             }
             if(valid){
                 Pin newPin = new Pin(coord_x, coord_y);
-                pinList.add(newPin);    
+                pinList.add(newPin);
+                return_message = return_message + "Pin placed, ";    
                 for(int i = 0; i < numNotes; i++){
                     Note current = noteList.get(i);
                     if(coord_x >= current.coord_x && coord_x <= current.width + current.coord_x){
@@ -296,26 +331,11 @@ public class Server{
                     }
                 }
                 if(pinCount < 1){
-                    return_message = "No notes were pinned at position (" + coord_x + ", " + coord_y + ").";
+                    return_message = return_message + "no notes were pinned at position (" + coord_x + ", " + coord_y + ").";
                 }else{
-                    return_message = "" +pinCount + " message(s) have been pinned."; 
+                    return_message = return_message + "" +pinCount + " message(s) have been pinned."; 
                 }
             }
-            //test pins
-            // for(int i = 0; i < numNotes; i++){
-            //     Note current = noteList.get(i);
-            //     for(int j = 0; j < current.pins.size(); j++){
-            //         Pin currentPin = current.pins.get(j);
-                    
-            //         System.out.printf("Note: %d, Pin %d: (%d, %d)\n", i, j, currentPin.x, currentPin.y);
-
-            //     }
-            // }
-            // for(int i = 0; i < pinList.size(); i++){
-            //     Pin currentPin = pinList.get(i);
-            //     System.out.printf("Global Pin %d: (%d, %d)\n", i, currentPin.x, currentPin.y);
-                
-            // }   
 
 			return return_message;
         }
@@ -334,20 +354,28 @@ public class Server{
             }
 
             if(valid){
-                for(int i = 0; i < noteList.size(); i++){
-                    Note current = noteList.get(i);
-                    for(int j = 0; j < current.pins.size(); j++){
-                        Pin currentPin = current.pins.get(j);
-                        if(currentPin.x == coord_x && currentPin.y == coord_y){
-                            System.out.printf("removed pin %d at (%d, %d)\n", j, currentPin.x, currentPin.y);
-                            current.pins.remove(j);
-                            unpinnedCount++;
-                            unpinned = true;
-                            j--; // decrement j if found based on linkedlist accounting for deletion
-                            if(current.pins.size() == 0){
-                                current.pinned = false;
+                for(int i = 0; i < pinList.size(); i++){
+                    Pin currentPin = pinList.get(i);
+                    if(currentPin.x == coord_x && currentPin.y == coord_y){
+                        //remove this pin
+                        unpinned = true;
+                        unpinnedCount++;
+                        for(int j = 0; j < noteList.size(); j++){
+                            Note currentNote = noteList.get(j);
+                            for(int k = 0; k < currentNote.pins.size(); k++){
+                                Pin notePin = currentNote.pins.get(k);
+                                if(notePin.x == coord_x && notePin.y == coord_y){
+                                    currentNote.pins.remove(k);
+                                    
+                                    k--; //decrement k if removing pin for LinkedList
+                                    if(currentNote.pins.size() == 0){
+                                        currentNote.pinned = false;
+                                    }
+                                }
                             }
                         }
+                    pinList.remove(i);
+                    i--; // decrement i for linkedlist
                     }
                 }
             }
