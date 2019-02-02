@@ -213,6 +213,44 @@ public class Server{
         }
 
         public String get(String msg){
+            String return_message = "";
+            Scanner msg_scan = new Scanner(msg);
+            boolean valid = false;
+            String color;
+            String refersTo;
+            String contains1; String contains2;
+            String refersTo = "";
+
+
+            while(msg_scan.hasNext()){
+                String cond = msg_scan.next();
+                if(cond.equals("PINS")){
+                    return_message = return_message + "The board has pins at locations:";
+                    for(int i = 0; i < pinList.size(); i++){
+                        return_message = return_message + " {" + pinList.get(i).x + "," + pinList.get(i).y + "}";
+                    }
+                }else if(cond.equals("color")){
+                    color = msg.next();
+                }else if(cond.equals("contains")){
+                    contains1 = msg_scan.next();
+                    if(!contains1.equals("all")){
+                        contains2 = msg_scan.next();
+                    }
+                }else if(cond.equals("refersTo")){
+                    refersTo = refersTo + msg_scan.next();
+                    while(msg_scan.hasNext()){
+                        refersTo = refersTo + " " + msg_scan.next();
+                    }
+                }
+
+                //handle grabbing correct stuff
+            }
+
+            
+
+            }
+
+
             return null;
         }
 
