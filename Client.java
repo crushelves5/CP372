@@ -216,7 +216,7 @@ class Unpin {
 	}
 
 }
-class Pin {
+class PinGui {
 
 	public JFrame frame;
 	private JTextField xField;
@@ -226,7 +226,7 @@ class Pin {
 	/**
 	 * Create the application.
 	 */
-	public Pin() {
+	public PinGui() {
 		initialize();
 	}
 
@@ -420,7 +420,7 @@ public class Client {
     static PrintWriter out; 
 	public static Window connect_window;
 	public static Dashboard dashboard;
-	public static Pin pin_window;
+	public static PinGui pin_window;
 	public static Unpin unpin_window;
 	public static Post post_window;
 	public static Get get_window;
@@ -486,7 +486,7 @@ public class Client {
 		    EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					pin_window = new Pin();
+					pin_window = new PinGui();
 					pin_window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

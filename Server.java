@@ -23,7 +23,7 @@ import java.util.Scanner;
 class Pin{
     int x;
     int y;
-    Pin(int x, int y){
+    public Pin(int x, int y){
         this.x = x;
         this.y = y;
     }
