@@ -217,12 +217,13 @@ public class Server{
             Scanner msg_scan = new Scanner(msg);
             boolean valid = false;
             String color;
-            String refersTo;
             String contains1; String contains2;
             String refersTo = "";
+            boolean notesFound = false;
 
 
             while(msg_scan.hasNext()){
+                valid = true;
                 String cond = msg_scan.next();
                 if(cond.equals("PINS")){
                     return_message = return_message + "The board has pins at locations:";
@@ -230,7 +231,7 @@ public class Server{
                         return_message = return_message + " {" + pinList.get(i).x + "," + pinList.get(i).y + "}";
                     }
                 }else if(cond.equals("color")){
-                    color = msg.next();
+                    color = msg_scan.next();
                 }else if(cond.equals("contains")){
                     contains1 = msg_scan.next();
                     if(!contains1.equals("all")){
@@ -238,20 +239,33 @@ public class Server{
                     }
                 }else if(cond.equals("refersTo")){
                     refersTo = refersTo + msg_scan.next();
-                    while(msg_scan.hasNext()){
-                        refersTo = refersTo + " " + msg_scan.next();
+                    if(!refersTo.equals("all")){
+                        while(msg_scan.hasNext()){
+                            refersTo = refersTo + " " + msg_scan.next();
+                        }
                     }
                 }
-
+                
                 //handle grabbing correct stuff
+                if(valid = true){
+                    return_message = return_message + "Query results:"
+                    for(int i = 0; i < noteList.size(); i++){
+                        Note current = noteList.get(i);
+                        if(contains1.equals("all") || (contains1.equals(current.coord_x) && contains2.equals(current.coord_y))){
+                            if(color.equals("all") || color.equals(current.color)){
+                                if(refersTo.equals("all") || current.message.contains(refersTo)){
+                                    out.printf("Note: " + current.message);
+                                    foundNotes = true;
+                                }
+                            }
+                        }
+                    }
+                    if(!foundNotes){
+                        return_message = return_message + "No notes were found matching the query.";
+                    }
+                }
             }
-
-            
-
-            }
-
-
-            return null;
+            return return_message;
         }
 
         public String pin(String msg){
