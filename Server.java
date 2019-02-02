@@ -143,7 +143,7 @@ public class Server{
                         break;
                     }
 					scan_msg = new Scanner(input);
-					return_message = messageHandler(scan_msg);
+					return_message = messageHandler(scan_msg, out);
 					out.println(return_message);
 
 
@@ -160,14 +160,14 @@ public class Server{
             }
         }
 		
-        public String messageHandler(Scanner msg_scan){
+        public String messageHandler(Scanner msg_scan, PrintWriter out){
             String msg = msg_scan.next();
 			String return_message = "";
 			//Compare the command then pass in the rest of the message to the appropriate function
             if(msg.equals("POST")){
                return_message = post(msg_scan.nextLine());
             }else if(msg.equals("GET")){
-                //get(msg);
+                get(msg, out);
             }else if(msg.equals("PIN")){
                 return_message = pin(msg_scan.nextLine());
             }else if(msg.equals("UNPIN")){
@@ -212,12 +212,13 @@ public class Server{
 			
         }
 
-        public String get(String msg){
+        public String get(String msg, PrintWriter out){
             String return_message = "";
             Scanner msg_scan = new Scanner(msg);
             boolean valid = false;
-            String color;
-            String contains1; String contains2;
+            String color = "";
+            String contains1 = "";
+            String contains2 = "";
             String refersTo = "";
             boolean notesFound = false;
 
@@ -248,19 +249,19 @@ public class Server{
                 
                 //handle grabbing correct stuff
                 if(valid = true){
-                    return_message = return_message + "Query results:"
+                    return_message = return_message + "Query results:";
                     for(int i = 0; i < noteList.size(); i++){
                         Note current = noteList.get(i);
                         if(contains1.equals("all") || (contains1.equals(current.coord_x) && contains2.equals(current.coord_y))){
                             if(color.equals("all") || color.equals(current.color)){
                                 if(refersTo.equals("all") || current.message.contains(refersTo)){
                                     out.printf("Note: " + current.message);
-                                    foundNotes = true;
+                                    notesFound = true;
                                 }
                             }
                         }
                     }
-                    if(!foundNotes){
+                    if(!notesFound){
                         return_message = return_message + "No notes were found matching the query.";
                     }
                 }
