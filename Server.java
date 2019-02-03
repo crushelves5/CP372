@@ -92,12 +92,13 @@ public class Server{
         System.out.println("The Note Board server is running at port "+port+".");
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
+		/*
         try{
             new RequestHandler().start();
         }catch(Exception e){
             System.out.println("Server request cant initiate");
         }
-
+*/
         try {
             while (true) {
                 new Client(listener.accept(), clientNumber++).start();
@@ -117,7 +118,7 @@ public class Server{
      * socket.  The client terminates the dialogue by sending a single line
      * containing only a period.
      */
-
+/*
     public static class RequestHandler extends Thread{
         
 
@@ -140,6 +141,72 @@ public class Server{
             }
         }
 		
+		
+
+    }
+*/
+    private static class Client extends Thread {
+        private Socket socket;
+        private int clientNumber;
+
+        public Client(Socket socket, int clientNumber) {
+            this.socket = socket;
+            this.clientNumber = clientNumber;
+            log("New connection with client# " + clientNumber + " at " + socket);
+        }
+
+        /**
+         * Services this thread's client by first sending the
+         * client a welcome message then repeatedly reading strings
+         * and sending back the capitalized version of the string.
+         */
+
+        public void run() {
+			
+            try {
+				Scanner scan_msg;
+                String return_message;
+                
+                // Decorate the streams so we can send characters
+                // and not just bytes.  Ensure output is flushed
+                // after every newline.
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
+                // Send a welcome message to the client.
+				for (int x = 0; x < colors.size();x++){
+					welcome_note = welcome_note + colors.get(x)+", ";
+				}
+				out.println(welcome_note);
+//                out.println("Enter a line with only a period to quit\n");
+
+                // Get messages from the client, line by line;
+                while (true) {
+                    String input = in.readLine();
+                    if (input.equals("DISCONNECT")) {
+						socket.close();
+                        break;
+                    }
+					scan_msg = new Scanner(input);
+					return_message = messageHandler(scan_msg);
+                    //Message command = new Message(input,out);
+                    //q.add(command);
+					out.println(return_message);
+                
+
+                }
+            } catch (IOException e) {
+                log("Error handling client# " + clientNumber + ": " + e);
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    log("Couldn't close a socket, what's going on?");
+                }
+                log("Connection with client# " + clientNumber + " closed");
+            }
+        }
 		public String messageHandler(Scanner msg_scan){
             String msg = msg_scan.next();
 			String return_message = "";
@@ -349,71 +416,6 @@ public class Server{
 		}
 		return return_message = noteCount+" note(s) have been cleared";
         }
-
-    }
-
-    private static class Client extends Thread {
-        private Socket socket;
-        private int clientNumber;
-
-        public Client(Socket socket, int clientNumber) {
-            this.socket = socket;
-            this.clientNumber = clientNumber;
-            log("New connection with client# " + clientNumber + " at " + socket);
-        }
-
-        /**
-         * Services this thread's client by first sending the
-         * client a welcome message then repeatedly reading strings
-         * and sending back the capitalized version of the string.
-         */
-
-        public void run() {
-			
-            try {
-				Scanner scan_msg;
-                String return_message;
-                
-                // Decorate the streams so we can send characters
-                // and not just bytes.  Ensure output is flushed
-                // after every newline.
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
-                // Send a welcome message to the client.
-				for (int x = 0; x < colors.size();x++){
-					welcome_note = welcome_note + colors.get(x)+", ";
-				}
-				out.println(welcome_note);
-//                out.println("Enter a line with only a period to quit\n");
-
-                // Get messages from the client, line by line;
-                while (true) {
-                    String input = in.readLine();
-                    if (input.equals("DISCONNECT")) {
-						socket.close();
-                        break;
-                    }
-					
-                    Message command = new Message(input,out);
-                    q.add(command);
-					
-                
-
-                }
-            } catch (IOException e) {
-                log("Error handling client# " + clientNumber + ": " + e);
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    log("Couldn't close a socket, what's going on?");
-                }
-                log("Connection with client# " + clientNumber + " closed");
-            }
-        }
-		
         
 
 

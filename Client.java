@@ -404,10 +404,28 @@ class Get {
 		JButton btnGet = new JButton("GET");
 		btnGet.setBounds(288, 28, 89, 39);
 		frame.getContentPane().add(btnGet);
+		btnGet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				String color =colorField.getText();
+				String contains = containsField.getText();
+				String refersTo = refersField.getText();
+				if(color.equals("")){color ="all";}
+				if(contains.equals("")){contains="all";}
+				if(refersTo.equals("")){refersTo="all";}
+				Client.get("GET color "+color+" contains "+contains+" refersTo "+refersTo);
+				
+			}
+		});
 		
 		JButton btnGetPins = new JButton("GET PINS");
 		btnGetPins.setBounds(288, 84, 89, 39);
 		frame.getContentPane().add(btnGetPins);
+		btnGetPins.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Client.get("GET PINS");
+				
+			}
+		});
 	}
 
 }
@@ -531,6 +549,18 @@ public class Client {
 				}
 			}
 		});
+	}
+	
+	public static void get(String message){
+		try{
+			out.println(message);
+			System.out.println("Sent "+message+" to server");
+			dashboard.responseField.append(in.readLine()+"\n");
+		}
+		catch(Exception e){
+			System.out.println("Something is wrong");
+		}
+		
 	}
 	
 	public static void pin(String x, String y){
