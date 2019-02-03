@@ -276,6 +276,7 @@ class PinGui {
 class Post {
 
 	public JFrame frame;
+	public Choice colors;
 	private JTextField xField;
 	private JTextField yField;
 	private JTextField widthField;
@@ -293,7 +294,7 @@ class Post {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 306, 492);
+		frame.setBounds(100, 100, 306, 320);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -337,17 +338,39 @@ class Post {
 		lblColor.setBounds(10, 147, 78, 23);
 		frame.getContentPane().add(lblColor);
 		
-		Choice colors = new Choice();
+		colors = new Choice();
 		colors.setBounds(93, 150, 180, 20);
 		frame.getContentPane().add(colors);
 		
-		JTextArea messageField = new JTextArea();
-		messageField.setBounds(10, 181, 265, 193);
+		JTextField messageField = new JTextField();
+		messageField.setBounds(10, 181, 276, 40);
 		frame.getContentPane().add(messageField);
 		
 		JButton btnPost = new JButton("POST");
-		btnPost.setBounds(106, 400, 89, 23);
+		btnPost.setBounds(106, 240, 89, 23);
 		frame.getContentPane().add(btnPost);
+		btnPost.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try{
+				int coord_x = Integer.parseInt(xField.getText());
+				int coord_y = Integer.parseInt(yField.getText());
+				int width = Integer.parseInt(widthField.getText());
+				int height = Integer.parseInt(heightField.getText());
+				
+				
+				if(coord_x >= 0 && coord_y >= 0 && width > 0 && height >0){
+					Client.post("POST "+coord_x+" "+coord_y+" "+width+" "+height+" "+colors.getSelectedItem()+" "+messageField.getText());
+				}
+				else{
+					JOptionPane.showMessageDialog(null,"Invalid Input");
+				}
+				}
+				catch(Exception e){
+					JOptionPane.showMessageDialog(null,"Invalid Input");
+				}
+				
+			}
+		});
 	}
 }
 class Get {
@@ -442,6 +465,7 @@ public class Client {
 	public static Unpin unpin_window;
 	public static Post post_window;
 	public static Get get_window;
+	public static String [] colors;
     public static void main(String[] args) throws Exception {
 	
     EventQueue.invokeLater(new Runnable() {
@@ -499,6 +523,10 @@ public class Client {
 		return success;
 	}
 	
+	public static void Errorpane(){
+		JOptionPane.showMessageDialog(null,"Invalid Input");
+	}
+	
 	public static void openPin(){
 			
 		    EventQueue.invokeLater(new Runnable() {
@@ -531,6 +559,9 @@ public class Client {
 			public void run() {
 				try {
 					post_window = new Post();
+					for(int x =0; x< colors.length-1;x++){
+						post_window.colors.add(colors[x]);
+					}
 					post_window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -550,6 +581,16 @@ public class Client {
 			}
 		});
 	}
+	public static void post(String message){
+		try{
+			out.println(message);
+			System.out.println("Sent "+message+" to server");
+			dashboard.responseField.append(in.readLine()+"\n");
+		}
+		catch(Exception e){
+			System.out.println("Something went wrong");
+		}
+	}
 	
 	public static void get(String message){
 		try{
@@ -558,35 +599,43 @@ public class Client {
 			dashboard.responseField.append(in.readLine()+"\n");
 		}
 		catch(Exception e){
-			System.out.println("Something is wrong");
+			System.out.println("Something went wrong");
 		}
 		
 	}
 	
 	public static void pin(String x, String y){
+		try{
 		int coord_x = Integer.parseInt(x);
 		int coord_y = Integer.parseInt(y);
-		try{
+		
 			if(coord_x >= 0 && coord_y >= 0){
 				out.println("PIN "+x+" "+y);
 				dashboard.responseField.append(in.readLine()+"\n");
 			}
+			else{
+				JOptionPane.showMessageDialog(null, "Valid coordinates are greater than 0");
+			}
 		}
 		catch(Exception e){
-			JOptionPane.showMessageDialog(dashboard.frame, "Invalid Input");
+			JOptionPane.showMessageDialog(null, "Invalid Input");
 		}
 	}
 	public static void unpin(String x, String y){
+		try{
 		int coord_x = Integer.parseInt(x);
 		int coord_y = Integer.parseInt(y);
-		try{
+		
 			if(coord_x >= 0 && coord_y >= 0){
 				out.println("UNPIN "+x+" "+y);
 				dashboard.responseField.append(in.readLine()+"\n");
 			}
+			else{
+				JOptionPane.showMessageDialog(null, "Valid coordinates are greater than 0");
+			}
 		}
 		catch(Exception e){
-			JOptionPane.showMessageDialog(dashboard.frame, "Invalid Input");
+			JOptionPane.showMessageDialog(null, "Invalid Input");
 		}
 	}
 	
@@ -606,14 +655,17 @@ public class Client {
 	
 	public static void welcome_message(){
 		// Consume and display welcome message, and Available colors from server
-		
 		    EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
+					String colorLine = "";
 					dashboard = new Dashboard();
 					dashboard.responseField.append(in.readLine()+"\n");
 					dashboard.responseField.append(in.readLine()+"\n");
-					dashboard.responseField.append(in.readLine()+"\n");
+					colorLine= in.readLine();
+					dashboard.responseField.append(colorLine+"\n");
+					colors = colorLine.split(",");
+
 					dashboard.frame.setVisible(true);
 					connect_window.frame.setVisible(false);
 				} catch (Exception e) {
