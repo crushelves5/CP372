@@ -214,7 +214,7 @@ public class Server{
             if(msg.equals("POST")){
                return_message = post(msg_scan.nextLine());
             }else if(msg.equals("GET")){
-                get(msg);
+                return_message = get(msg_scan.nextLine());
             }else if(msg.equals("PIN")){
                 return_message = pin(msg_scan.nextLine());
             }else if(msg.equals("UNPIN")){
@@ -271,38 +271,47 @@ public class Server{
 
 
             while(msg_scan.hasNext()){
-                valid = true;
+                
                 String cond = msg_scan.next();
                 if(cond.equals("PINS")){
-                    return_message = return_message + "The board has pins at locations:";
+					if(pinList.size() > 0){
+                    return_message = "The board has pins at locations:";
                     for(int i = 0; i < pinList.size(); i++){
                         return_message = return_message + " {" + pinList.get(i).x + "," + pinList.get(i).y + "}";
                     }
+					}
+					else{
+						return_message ="There are no pins on the board";
+					}
+					break;
                 }else if(cond.equals("color")){
+					valid = true;
                     color = msg_scan.next();
+					
                 }else if(cond.equals("contains")){
                     contains1 = msg_scan.next();
                     if(!contains1.equals("all")){
                         contains2 = msg_scan.next();
                     }
                 }else if(cond.equals("refersTo")){
-                    refersTo = refersTo + msg_scan.next();
-                    if(!refersTo.equals("all")){
-                        while(msg_scan.hasNext()){
-                            refersTo = refersTo + " " + msg_scan.next();
-                        }
+                    refersTo = msg_scan.next();
+					    if(!refersTo.equals("all")){
+                       while(msg_scan.hasNext()){
+						   refersTo = refersTo+" "+msg_scan.next();
+					   }
                     }
+
                 }
-                
+			}  
                 //handle grabbing correct stuff
-                if(valid = true){
-                    return_message = return_message + "Query results:";
+                if(valid == true){
+                    return_message = return_message + "Query results:,";
                     for(int i = 0; i < noteList.size(); i++){
                         Note current = noteList.get(i);
-                        if(contains1.equals("all") || (contains1.equals(current.coord_x) && contains2.equals(current.coord_y))){
+                        if(contains1.equals("all") || (Integer.parseInt(contains1)== current.coord_x && Integer.parseInt(contains2)==current.coord_y)){
                             if(color.equals("all") || color.equals(current.color)){
                                 if(refersTo.equals("all") || current.message.contains(refersTo)){
-                                    return_message = return_message+"Note: " + current.message;
+                                    return_message = return_message+"Note: " + current.message+",";
                                     notesFound = true;
                                 }
                             }
@@ -312,7 +321,7 @@ public class Server{
                         return_message = return_message + "No notes were found matching the query.";
                     }
                 }
-            }
+            
             return return_message;
         }
 

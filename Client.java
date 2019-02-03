@@ -595,7 +595,6 @@ public class Client {
 	public static void get(String message){
 		try{
 			out.println(message);
-			System.out.println("Sent "+message+" to server");
 			dashboard.responseField.append(in.readLine()+"\n");
 		}
 		catch(Exception e){
