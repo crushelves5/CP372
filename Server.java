@@ -20,7 +20,14 @@ import java.util.Queue;
  * If you ran it from a console window with the "java" interpreter, Ctrl+C will
  * shut it down.
  */
-
+class Message{
+public String message;
+public PrintWriter out;
+	public Message(String message,PrintWriter out){
+		this.message = message;
+		this.out = out;
+	}
+}
 class Pin{
     int x;
     int y;
@@ -61,7 +68,7 @@ public class Server{
     private static ArrayList<String> colors = new ArrayList<String>();
     public static LinkedList<Note> noteList = new LinkedList<Note>();
     public static LinkedList<Pin> pinList = new LinkedList<Pin>();
-    Queue<String> q = new LinkedList<String>();
+    public static Queue<Message> q = new LinkedList<>();
     
     /**
      * Application method to run the server runs in an infinite loop
@@ -86,7 +93,7 @@ public class Server{
         int clientNumber = 0;
         ServerSocket listener = new ServerSocket(port);
         try{
-            new RequestHandler(listener.accept()).start();
+            new RequestHandler().start();
         }catch(Exception e){
             System.out.println("Server request cant initiate");
         }
@@ -114,94 +121,33 @@ public class Server{
     public static class RequestHandler extends Thread{
         
 
-        public void run(Socket socket){
-            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        public void run(){
+            
             String return_message;
             Scanner scan_msg;
             try{
                 while(true){
+					
                     if(q.peek() != null){
-                        messageHandler(q.pop());
-                        scan_msg = new Scanner(q.pop());
-                        return_message = messageHandler(scan_msg, out);
-                        out.println(return_message);
+                        Message object = q.remove();
+                        scan_msg = new Scanner(object.message);
+                        return_message = messageHandler(scan_msg);
+                        object.out.println(return_message);
                     }
                 }
             }catch(Exception e){
                 System.out.println("ran into error with requesthandler");
             }
         }
-    }
-
-    private static class Client extends Thread {
-        private Socket socket;
-        private int clientNumber;
-
-        public Client(Socket socket, int clientNumber) {
-            this.socket = socket;
-            this.clientNumber = clientNumber;
-            log("New connection with client# " + clientNumber + " at " + socket);
-        }
-
-        /**
-         * Services this thread's client by first sending the
-         * client a welcome message then repeatedly reading strings
-         * and sending back the capitalized version of the string.
-         */
-
-        public void run() {
-			
-            try {
-				Scanner scan_msg;
-                String return_message;
-                
-                // Decorate the streams so we can send characters
-                // and not just bytes.  Ensure output is flushed
-                // after every newline.
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(socket.getInputStream()));
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
-                // Send a welcome message to the client.
-				for (int x = 0; x < colors.size();x++){
-					welcome_note = welcome_note + colors.get(x)+", ";
-				}
-				out.println(welcome_note);
-//                out.println("Enter a line with only a period to quit\n");
-
-                // Get messages from the client, line by line;
-                while (true) {
-                    String input = in.readLine();
-                    if (input == null || input.equals(".")) {
-                        break;
-                    }
-                    
-
-                    q.push(input);
-
-                
-
-                }
-            } catch (IOException e) {
-                log("Error handling client# " + clientNumber + ": " + e);
-            } finally {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    log("Couldn't close a socket, what's going on?");
-                }
-                log("Connection with client# " + clientNumber + " closed");
-            }
-        }
 		
-        public String messageHandler(Scanner msg_scan, PrintWriter out){
+		public String messageHandler(Scanner msg_scan){
             String msg = msg_scan.next();
 			String return_message = "";
 			//Compare the command then pass in the rest of the message to the appropriate function
             if(msg.equals("POST")){
                return_message = post(msg_scan.nextLine());
             }else if(msg.equals("GET")){
-                get(msg, out);
+                get(msg);
             }else if(msg.equals("PIN")){
                 return_message = pin(msg_scan.nextLine());
             }else if(msg.equals("UNPIN")){
@@ -246,7 +192,7 @@ public class Server{
 			
         }
 
-        public String get(String msg, PrintWriter out){
+        public String get(String msg){
             String return_message = "";
             Scanner msg_scan = new Scanner(msg);
             boolean valid = false;
@@ -289,7 +235,7 @@ public class Server{
                         if(contains1.equals("all") || (contains1.equals(current.coord_x) && contains2.equals(current.coord_y))){
                             if(color.equals("all") || color.equals(current.color)){
                                 if(refersTo.equals("all") || current.message.contains(refersTo)){
-                                    out.printf("Note: " + current.message);
+                                    return_message = return_message+"Note: " + current.message;
                                     notesFound = true;
                                 }
                             }
@@ -404,6 +350,71 @@ public class Server{
 		return return_message = noteCount+" note(s) have been cleared";
         }
 
+    }
+
+    private static class Client extends Thread {
+        private Socket socket;
+        private int clientNumber;
+
+        public Client(Socket socket, int clientNumber) {
+            this.socket = socket;
+            this.clientNumber = clientNumber;
+            log("New connection with client# " + clientNumber + " at " + socket);
+        }
+
+        /**
+         * Services this thread's client by first sending the
+         * client a welcome message then repeatedly reading strings
+         * and sending back the capitalized version of the string.
+         */
+
+        public void run() {
+			
+            try {
+				Scanner scan_msg;
+                String return_message;
+                
+                // Decorate the streams so we can send characters
+                // and not just bytes.  Ensure output is flushed
+                // after every newline.
+                BufferedReader in = new BufferedReader(
+                        new InputStreamReader(socket.getInputStream()));
+                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+				String welcome_note = "Hello, you are client #"+ clientNumber +".\nAvailable note colors\n";
+                // Send a welcome message to the client.
+				for (int x = 0; x < colors.size();x++){
+					welcome_note = welcome_note + colors.get(x)+", ";
+				}
+				out.println(welcome_note);
+//                out.println("Enter a line with only a period to quit\n");
+
+                // Get messages from the client, line by line;
+                while (true) {
+                    String input = in.readLine();
+                    if (input.equals("DISCONNECT")) {
+						socket.close();
+                        break;
+                    }
+					
+                    Message command = new Message(input,out);
+                    q.add(command);
+					
+                
+
+                }
+            } catch (IOException e) {
+                log("Error handling client# " + clientNumber + ": " + e);
+            } finally {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    log("Couldn't close a socket, what's going on?");
+                }
+                log("Connection with client# " + clientNumber + " closed");
+            }
+        }
+		
+        
 
 
         /**
@@ -414,5 +425,6 @@ public class Server{
             System.out.println(message);
         }
     }
-}
+
+	}
 
