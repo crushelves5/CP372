@@ -483,33 +483,6 @@ public class Client {
 		});
 		
 
-
-        Scanner scanner = new Scanner(System.in);
-		Scanner message_scan;
-        while (true) {
-            System.out.println("\nEnter a message to send to the server (DISCONNECT to disconnect):");
-            String message = scanner.nextLine();
-			message_scan = new Scanner(message);
-            if (message.equals("DISCONNECT")) {//disconnect from server and client session ends
-			out.println("DISCONNECT");
-                break;
-            }
-			else{
-				//Determine if the message is a valid format
-				boolean msg_valid = CheckMessage(message_scan);
-				if (msg_valid){
-					//If valid, send message to server
-					out.println(message);
-					System.out.println(in.readLine());
-					}
-				else{System.out.println("Input has invalid form");}
-				
-			}
-			
-          // out.println(message);
-           //System.out.println(in.readLine());
-			
-        }
     }
 	
 	public static String connect(String addrs, int port_num){
@@ -598,7 +571,11 @@ public class Client {
 	public static void get(String message){
 		try{
 			out.println(message);
-			dashboard.responseField.append(in.readLine()+"\n");
+			String [] lines = in.readLine().split("-");
+			for(int x = 0; x < lines.length;x++){
+			dashboard.responseField.append(lines[x]+"\n");
+			}
+			//dashboard.responseField.append(in.readLine()+"\n");
 		}
 		catch(Exception e){
 			System.out.println("Something went wrong");

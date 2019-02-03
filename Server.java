@@ -305,13 +305,13 @@ public class Server{
 			}  
                 //handle grabbing correct stuff
                 if(valid == true){
-                    return_message = return_message + "Query results:,";
+                    return_message = return_message + "Query results:-";
                     for(int i = 0; i < noteList.size(); i++){
                         Note current = noteList.get(i);
                         if(contains1.equals("all") || (Integer.parseInt(contains1)== current.coord_x && Integer.parseInt(contains2)==current.coord_y)){
                             if(color.equals("all") || color.equals(current.color)){
                                 if(refersTo.equals("all") || current.message.contains(refersTo)){
-                                    return_message = return_message+"Note: " + current.message+",";
+                                    return_message = return_message+"Note: " + current.message+"-";
                                     notesFound = true;
                                 }
                             }
