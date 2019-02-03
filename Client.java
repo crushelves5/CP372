@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
 import java.awt.BorderLayout;
 import javax.swing.JTextField;
 import java.awt.Choice;
@@ -92,7 +93,9 @@ class Dashboard {
 		responseField = new JTextArea();
 		responseField.setEditable(false);
 		responseField.setBounds(191, 44, 326, 195);
-		frame.getContentPane().add(responseField);
+		JScrollPane scroll = new JScrollPane(responseField);
+		scroll.setBounds(191,44,326,195);
+		frame.getContentPane().add(scroll);
 	}
 }
 
