@@ -308,14 +308,25 @@ public class Server{
                     return_message = return_message + "Query results:-";
                     for(int i = 0; i < noteList.size(); i++){
                         Note current = noteList.get(i);
-                        if(contains1.equals("all") || (Integer.parseInt(contains1)== current.coord_x && Integer.parseInt(contains2)==current.coord_y)){
+                        
                             if(color.equals("all") || color.equals(current.color)){
                                 if(refersTo.equals("all") || current.message.contains(refersTo)){
+									if(contains1.equals("all")) {
                                     return_message = return_message+"Note: " + current.message+"-";
                                     notesFound = true;
+									}
+									else{
+										for (int x = 0; x < current.pins.size(); x++){
+											if(Integer.parseInt(contains1)== (current.pins.get(x).x) && Integer.parseInt(contains2)==(current.pins.get(x).y)){
+		                                    return_message = return_message+"Note: " + current.message+"-";
+											notesFound = true;
+											break;
+											}
+										}
+									}
                                 }
                             }
-                        }
+                        
                     }
                     if(!notesFound){
                         return_message = return_message + "No notes were found matching the query.";

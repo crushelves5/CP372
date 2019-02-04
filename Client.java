@@ -447,6 +447,7 @@ class Get {
 					contains=contains +" "+containsField2.getText();
 				}
 				if(refersTo.equals("")){refersTo="all";}
+				//System.out.println("Semdomg "+"GET color "+color+" contains "+contains+" refersTo "+refersTo);
 				Client.get("GET color "+color+" contains "+contains+" refersTo "+refersTo);
 				
 			}
