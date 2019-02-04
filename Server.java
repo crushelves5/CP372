@@ -179,6 +179,7 @@ public class Server{
 					welcome_note = welcome_note + colors.get(x)+", ";
 				}
 				out.println(welcome_note);
+				out.println("Board Dimensions: Width: "+board_width+" Height: "+board_height);
 //                out.println("Enter a line with only a period to quit\n");
 
                 // Get messages from the client, line by line;

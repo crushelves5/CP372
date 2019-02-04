@@ -654,6 +654,7 @@ public class Client {
 					colorLine= in.readLine();
 					dashboard.responseField.append(colorLine+"\n");
 					colors = colorLine.split(",");
+					dashboard.responseField.append(in.readLine()+"\n");
 
 					dashboard.frame.setVisible(true);
 					connect_window.frame.setVisible(false);
