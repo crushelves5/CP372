@@ -581,7 +581,7 @@ public class Client {
 	public static void get(String message){
 		try{
 			out.println(message);
-			String [] lines = in.readLine().split("-");
+			String [] lines = in.readLine().split("~");
 			for(int x = 0; x < lines.length;x++){
 			dashboard.responseField.append(lines[x]+"\n");
 			}
