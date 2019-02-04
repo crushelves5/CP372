@@ -238,7 +238,7 @@ public class Server{
 			int height = msg_scan.nextInt();
             String color = msg_scan.next();
 			String message = msg_scan.nextLine();
-			if(coord_x > board_width || coord_y > board_height){
+			if(coord_x > board_width || coord_y > board_height || coord_x + width > board_width || coord_y + height > board_height){
 				valid = false;
 				return_message = return_message+"Coordinates are outside the board dimension, POST denied ";
 			}
@@ -351,6 +351,16 @@ public class Server{
 				return_message = return_message+"Coordinates are outside the board dimension, PIN denied ";
             }
             if(valid){
+                boolean pinUsed = false;
+                int j = 0;
+                for(j = 0; j < pinList.size(); j++){
+                    if(pinList.get(j).x == coord_x && pinList.get(j).y == coord_y){
+                        pinUsed = true;
+                    }
+                }
+                if(pinUsed){
+                    pinList.remove(j-1);
+                }
                 Pin newPin = new Pin(coord_x, coord_y);
                 pinList.add(newPin);
                 return_message = return_message + "Pin placed, ";    
