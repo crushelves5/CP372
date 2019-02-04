@@ -380,7 +380,8 @@ class Get {
 
 	public JFrame frame;
 	private JTextField colorField;
-	private JTextField containsField;
+	private JTextField containsField1;
+	private JTextField containsField2;
 	private JTextField refersField;
 
 
@@ -413,10 +414,15 @@ class Get {
 		lblContains.setBounds(42, 69, 68, 14);
 		frame.getContentPane().add(lblContains);
 		
-		containsField = new JTextField();
-		containsField.setColumns(10);
-		containsField.setBounds(109, 66, 131, 20);
-		frame.getContentPane().add(containsField);
+		containsField1 = new JTextField();
+		containsField1.setColumns(10);
+		containsField1.setBounds(109, 66, 60, 20);
+		frame.getContentPane().add(containsField1);
+		
+		containsField2 = new JTextField();
+		containsField2.setColumns(10);
+		containsField2.setBounds(190, 66, 60, 20);
+		frame.getContentPane().add(containsField2);
 		
 		JLabel lblRefersto = new JLabel("refersTo");
 		lblRefersto.setBounds(42, 109, 46, 14);
@@ -433,10 +439,13 @@ class Get {
 		btnGet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String color =colorField.getText();
-				String contains = containsField.getText();
+				String contains = containsField1.getText();
 				String refersTo = refersField.getText();
 				if(color.equals("")){color ="all";}
 				if(contains.equals("")){contains="all";}
+				else{
+					contains=contains +" "+containsField2.getText();
+				}
 				if(refersTo.equals("")){refersTo="all";}
 				Client.get("GET color "+color+" contains "+contains+" refersTo "+refersTo);
 				
