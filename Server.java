@@ -307,30 +307,36 @@ public class Server{
                 //handle grabbing correct stuff
                 if(valid == true){
                     return_message = return_message + "Query results:~";
-                    for(int i = 0; i < noteList.size(); i++){
-                        Note current = noteList.get(i);
-                        
-                            if(color.equals("all") || color.equals(current.color)){
-                                if(refersTo.equals("all") || current.message.contains(refersTo)){
-									if(contains1.equals("all")) {
-                                    return_message = return_message+"Note: " + current.message+"~";
-                                    notesFound = true;
-									}
-									else{
-										for (int x = 0; x < current.pins.size(); x++){
-											if(Integer.parseInt(contains1)== (current.pins.get(x).x) && Integer.parseInt(contains2)==(current.pins.get(x).y)){
-		                                    return_message = return_message+"Note: " + current.message+"~";
-											notesFound = true;
-											break;
-											}
-										}
-									}
+                    try{
+
+                    
+                        for(int i = 0; i < noteList.size(); i++){
+                            Note current = noteList.get(i);
+                            
+                                if(color.equals("all") || color.equals(current.color)){
+                                    if(refersTo.equals("all") || current.message.contains(refersTo)){
+                                        if(contains1.equals("all")) {
+                                        return_message = return_message+"Note: " + current.message+"~";
+                                        notesFound = true;
+                                        }
+                                        else{
+                                            for (int x = 0; x < current.pins.size(); x++){
+                                                if(Integer.parseInt(contains1)== (current.pins.get(x).x) && Integer.parseInt(contains2)==(current.pins.get(x).y)){
+                                                return_message = return_message+"Note: " + current.message+"~";
+                                                notesFound = true;
+                                                break;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        
-                    }
-                    if(!notesFound){
-                        return_message = return_message + "No notes were found matching the query.";
+                            
+                        }
+                        if(!notesFound){
+                            return_message = return_message + "No notes were found matching the query.";
+                        }
+                    }catch(Exception e){
+                        return_message = return_message + "Invalid Input with query.";
                     }
                 }
             

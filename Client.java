@@ -438,13 +438,14 @@ class Get {
 		frame.getContentPane().add(btnGet);
 		btnGet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				boolean validContains = true;
 				String color =colorField.getText();
 				String contains = containsField1.getText();
 				String refersTo = refersField.getText();
 				if(color.equals("")){color ="all";}
 				if(contains.equals("")){contains="all";}
 				else{
-					contains=contains +" "+containsField2.getText();
+					contains=contains +" "+containsField2.getText();	
 				}
 				if(refersTo.equals("")){refersTo="all";}
 				//System.out.println("Semdomg "+"GET color "+color+" contains "+contains+" refersTo "+refersTo);
@@ -598,7 +599,7 @@ public class Client {
 		int coord_x = Integer.parseInt(x);
 		int coord_y = Integer.parseInt(y);
 		
-			if(coord_x >= 0 && coord_y >= 0){
+			if(coord_x >= 0 && coord_y >= 0 ){
 				out.println("PIN "+x+" "+y);
 				dashboard.responseField.append(in.readLine()+"\n");
 			}
