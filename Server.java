@@ -238,7 +238,7 @@ public class Server{
 			int height = msg_scan.nextInt();
             String color = msg_scan.next();
 			String message = msg_scan.nextLine();
-			if(coord_x > board_width || coord_y > board_height){
+			if(coord_x > board_width || coord_y > board_height || coord_x + width > board_width || coord_y + height > board_height){
 				valid = false;
 				return_message = return_message+"Coordinates are outside the board dimension, POST denied ";
 			}
@@ -307,30 +307,36 @@ public class Server{
                 //handle grabbing correct stuff
                 if(valid == true){
                     return_message = return_message + "Query results:~";
-                    for(int i = 0; i < noteList.size(); i++){
-                        Note current = noteList.get(i);
-                        
-                            if(color.equals("all") || color.equals(current.color)){
-                                if(refersTo.equals("all") || current.message.contains(refersTo)){
-									if(contains1.equals("all")) {
-                                    return_message = return_message+"Note: " + current.message+"~";
-                                    notesFound = true;
-									}
-									else{
-										for (int x = 0; x < current.pins.size(); x++){
-											if(Integer.parseInt(contains1)== (current.pins.get(x).x) && Integer.parseInt(contains2)==(current.pins.get(x).y)){
-		                                    return_message = return_message+"Note: " + current.message+"~";
-											notesFound = true;
-											break;
-											}
-										}
-									}
+                    try{
+
+                    
+                        for(int i = 0; i < noteList.size(); i++){
+                            Note current = noteList.get(i);
+                            
+                                if(color.equals("all") || color.equals(current.color)){
+                                    if(refersTo.equals("all") || current.message.contains(refersTo)){
+                                        if(contains1.equals("all")) {
+                                        return_message = return_message+"Note: " + current.message+"~";
+                                        notesFound = true;
+                                        }
+                                        else{
+                                            for (int x = 0; x < current.pins.size(); x++){
+                                                if(Integer.parseInt(contains1)== (current.pins.get(x).x) && Integer.parseInt(contains2)==(current.pins.get(x).y)){
+                                                return_message = return_message+"Note: " + current.message+"~";
+                                                notesFound = true;
+                                                break;
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
-                            }
-                        
-                    }
-                    if(!notesFound){
-                        return_message = return_message + "No notes were found matching the query.";
+                            
+                        }
+                        if(!notesFound){
+                            return_message = return_message + "No notes were found matching the query.";
+                        }
+                    }catch(Exception e){
+                        return_message = return_message + "Invalid Input with query.";
                     }
                 }
             
@@ -351,6 +357,16 @@ public class Server{
 				return_message = return_message+"Coordinates are outside the board dimension, PIN denied ";
             }
             if(valid){
+                boolean pinUsed = false;
+                int j = 0;
+                for(j = 0; j < pinList.size(); j++){
+                    if(pinList.get(j).x == coord_x && pinList.get(j).y == coord_y){
+                        pinUsed = true;
+                    }
+                }
+                if(pinUsed){
+                    pinList.remove(j-1);
+                }
                 Pin newPin = new Pin(coord_x, coord_y);
                 pinList.add(newPin);
                 return_message = return_message + "Pin placed, ";    
