@@ -11,6 +11,16 @@ import javax.swing.JTextPane;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+
+//my imports
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+
+
 class gui{
 	public JFrame frame;
 	private JTextField receiverIPField;
@@ -28,6 +38,18 @@ class gui{
 	public gui(){
 		initialize();
 	}
+	
+	public void handshake(DatagramSocket sock){
+		Thread out = new Thread(){
+			public void run(){
+				try{
+					byte[] send;
+				}
+			}
+		};
+
+	}
+
 	
 		private void initialize() {
 frame = new JFrame();
@@ -86,7 +108,37 @@ frame = new JFrame();
 		
 		JButton btnNewButton = new JButton("TRANSFER");
 		btnNewButton.setBounds(100, 211, 103, 31);
+		btnNewButton.addActionListener(new ActionListener(){
+				//START HANDSHAKE
+			public void actionPerformed(ActionEvent e){
+				int MDS = Integer.parseInt(maxSizeField.getText());
+				String fileName = fileNameField.getText();
+				int senderPortNum = Integer.parseInt(senderPortField.getText());
+				int receiverPortNum = Integer.parseInt(receiverPortField.getText());
+				
+				try{
+					InetAddress receiverIP = InetAddress.getByName(receiverIPField.getText());
+					DatagramSocket sock = new DatagramSocket(senderPortNum);
+					sock.connect(receiverIP, receiverPortNum);
+
+					handshake(sock);
+
+					//START FILE TRANSFER
+					long currentTime = System.currentTimeMillis();
+					File fd = new File(fileName);
+					FileInputStream fileIn = new FileInputStream(fd);
+					double numBytes = fd.length();
+				}catch (Exception h){
+					System.out.println("exception occurred.");
+				}
+
+
+			}
+			
+		});
+
 		frame.getContentPane().add(btnNewButton);
+
 		
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
@@ -122,5 +174,7 @@ public class Sender{
 		
 		
 	}
+
+
 	
 }
