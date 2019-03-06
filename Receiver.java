@@ -12,7 +12,13 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 import javax.swing.JToggleButton;
 import javax.swing.JRadioButton;
-
+import java.net.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 class gui{
 
 	public JFrame frame;
@@ -24,7 +30,7 @@ class gui{
 	private JLabel maxSizeField;
 	private JLabel lblSender;
 	private JLabel lblPortOfReceiver;
-	private JTextField receiverPortField;
+	public JTextField receiverPortField;
 	private JLabel receivedLabel;
 	
 	public gui(){
@@ -33,7 +39,7 @@ class gui{
 	
 		private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 342, 300);
+		frame.setBounds(100, 100, 342, 340);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -103,13 +109,35 @@ class gui{
 		ButtonGroup bgroup = new ButtonGroup();
 		bgroup.add(rdbtnReliable);
 		bgroup.add(rdbtnUnreliable);
+		
+		JButton btnActivateReceiver = new JButton("ACTIVATE RECEIVER");
+		btnActivateReceiver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				try{
+				Receiver.socket = new DatagramSocket(Integer.parseInt(receiverPortField.getText()));
+				Receiver.senderIP =  InetAddress.getByName(senderIPField.getText());
+				Receiver.senderPort = Integer.parseInt(senderPortField.getText());
+				Receiver.fileName = fileNameField.getText();
+				Receiver.activate();
+				}
+				catch(Exception e){
+					System.out.println("Failed to activate Receiver");
+				}
+			}
+		});
+		btnActivateReceiver.setBounds(100, 247, 134, 23);
+		frame.getContentPane().add(btnActivateReceiver);
 	}
 	
 }
 public class Receiver{
 public static gui window;
+public static DatagramSocket socket;
+public static InetAddress senderIP;
+public static int senderPort;
+public static String fileName;
 	public static void main(String[] args){
-					EventQueue.invokeLater(new Runnable() {
+			EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
 					window = new gui();
@@ -119,5 +147,39 @@ public static gui window;
 				}
 			}
 		});
+		
+
+	}
+	public static void activate(){
+		System.out.println("Activating receiver");
+		int MDS;
+		byte [] buffer = new byte[1000];
+		try{
+		while(true){
+		DatagramPacket request = new DatagramPacket(buffer, buffer.length);
+		socket.receive(request);
+		String [] arrayMsg = new String(request.getData()).split(" ");
+		System.out.println(arrayMsg[0]);
+		System.out.println(arrayMsg[1]);
+		System.out.println("Message ends here");
+		/*
+		if(arrayMsg[0].equals("SYNC")){
+		MDS = Integer.parseInt(arrayMsg[1]);	
+		byte [] sndMsg = ("SYNACK").getBytes();
+		DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length,senderIP,senderPort);
+		socket.send(ack);
+		}
+		else if(arrayMsg[0].equals("ACK")){
+			
+			//Call function that will handle receiving transmission
+		}
+		*/
+		}
+		
+		}
+		catch(Exception e){
+			System.out.println("HANDSHAKE FAILED");
+			System.out.println(e.getMessage());
+		}
 	}
 }
