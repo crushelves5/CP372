@@ -50,12 +50,12 @@ class senderGui{
 		DatagramPacket request = new DatagramPacket(message,message.length, receiver, portNum);
 		socket.send(request);
 		
-		byte [] receiverBuffer = new byte[MDS + 6];
+		byte [] receiverBuffer = new byte[MDS+6];
 		DatagramPacket response = new DatagramPacket(receiverBuffer,receiverBuffer.length);
 		socket.receive(response);
 		//String reply = new String(response.getData()); //change to strin array
 		String[] arrayMsg  = new String(response.getData()).split(" ");
-		System.out.println("response was: " + arrayMsg[0]);
+		System.out.println("response was: " + arrayMsg[0].trim());
 		if (arrayMsg[0].trim().equals("SYNACK") == false){
 			System.out.println("the handshake has failed.");
 			textArea.setText("HANDSHAKE FAILED\n");
@@ -66,7 +66,7 @@ class senderGui{
 			message = msg.getBytes();
 			request = new DatagramPacket(message, message.length, receiver,portNum);
 			socket.send(request);
-			textArea.setText("HANDSHAKE success\n");
+			textArea.append("HANDSHAKE success"+"\n");
 			return true;
 		}
 		
@@ -175,7 +175,8 @@ frame = new JFrame();
 					
 					sock.close();
 				}catch (Exception h){
-					System.out.println("error occured: " + h.toString() );
+					System.out.println("error occured: "  );
+					h.printStackTrace();
 				}
 
 
@@ -189,7 +190,7 @@ frame = new JFrame();
 		JTextArea textArea = new JTextArea();
 		textArea.setEditable(false);
 		scroll = new JScrollPane(textArea);
-		textArea.setBounds(10, 206, 306, 163);
+		textArea.setBounds(10, 296, 306, 163);
 		scroll.setBounds(10,296,306,163);
 		frame.getContentPane().add(scroll);
 		
