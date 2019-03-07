@@ -21,7 +21,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 
-class gui{
+class senderGui{
 	public JFrame frame;
 	private JTextField receiverIPField;
 	private JTextField receiverPortField;
@@ -38,7 +38,7 @@ class gui{
 	private JLabel timeoutLabel;
 	private JTextField timeoutField;
 	
-	public gui(){
+	public senderGui(){
 		initialize();
 	}
 	
@@ -201,12 +201,12 @@ frame = new JFrame();
 
 
 public class Sender{
-	public static gui window;
+	public static senderGui window;
 	public static void main(String[] args){
 			EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					window = new gui();
+					window = new senderGui();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();

@@ -19,7 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-class gui{
+class receiverGui{
 
 	public JFrame frame;
 	private JTextField senderIPField;
@@ -33,7 +33,7 @@ class gui{
 	public JTextField receiverPortField;
 	private JLabel receivedLabel;
 	
-	public gui(){
+	public receiverGui(){
 		initialize();
 	}
 	
@@ -131,7 +131,7 @@ class gui{
 	
 }
 public class Receiver{
-public static gui window;
+public static receiverGui window;
 public static DatagramSocket socket;
 public static InetAddress senderIP;
 public static int senderPort;
@@ -140,7 +140,7 @@ public static String fileName;
 			EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					window = new gui();
+					window = new receiverGui();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
