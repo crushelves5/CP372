@@ -162,18 +162,19 @@ public static String fileName;
 		System.out.println(arrayMsg[0]);
 		System.out.println(arrayMsg[1]);
 		System.out.println("Message ends here");
-		/*
+		
 		if(arrayMsg[0].equals("SYNC")){
 		MDS = Integer.parseInt(arrayMsg[1]);	
 		byte [] sndMsg = ("SYNACK").getBytes();
-		DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length,senderIP,senderPort);
+		DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length ,senderIP,senderPort);
+		System.out.println("sending SYNACK");
 		socket.send(ack);
 		}
 		else if(arrayMsg[0].equals("ACK")){
-			
+			System.out.println("received ACK");
 			//Call function that will handle receiving transmission
 		}
-		*/
+		
 		}
 		
 		}

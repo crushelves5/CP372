@@ -42,30 +42,34 @@ class senderGui{
 		initialize();
 	}
 	
-	public boolean handshake(byte[] message,DatagramSocket socket, InetAddress receiver, int portNum){
+	public boolean handshake(byte[] message,DatagramSocket socket, InetAddress receiver, int portNum, int MDS){
 		
-		boolean success = true;
+		
 		try{
 		String msg;
 		DatagramPacket request = new DatagramPacket(message,message.length, receiver, portNum);
 		socket.send(request);
-		/*
-		byte [] receiverBuffer = new byte[1000];
+		
+		byte [] receiverBuffer = new byte[MDS + 6];
 		DatagramPacket response = new DatagramPacket(receiverBuffer,receiverBuffer.length);
 		socket.receive(response);
-		String reply = new String(response.getData());
-		if (!reply.equals("SYNACK")){
-			success = false;
+		//String reply = new String(response.getData()); //change to strin array
+		String[] arrayMsg  = new String(response.getData()).split(" ");
+		System.out.println("response was: " + arrayMsg[0]);
+		if (arrayMsg[0].trim().equals("SYNACK") == false){
+			System.out.println("the handshake has failed.");
 			textArea.setText("HANDSHAKE FAILED\n");
 		}
 		else{
-			msg = "ACK";
+			msg = "ACK   ";
+			System.out.println("getBytes");
 			message = msg.getBytes();
 			request = new DatagramPacket(message, message.length, receiver,portNum);
 			socket.send(request);
 			textArea.setText("HANDSHAKE success\n");
+			return true;
 		}
-		*/
+		
 		}
 		
 		catch(Exception e){
@@ -73,7 +77,7 @@ class senderGui{
 			e.getMessage();
 		}
 		
-		return success;
+		return false;
 	}
 
 	
@@ -158,20 +162,20 @@ frame = new JFrame();
 					String handshakeMessage = "SYNC "+MDS+" ";
 					//convert handshake message to stream of bytes
 					byte [] msg = handshakeMessage.getBytes();
-					boolean success = handshake(msg, sock, receiverIP, receiverPortNum);
-					/*
-					if (success){
+					System.out.println("before handshake");
+					boolean success = handshake(msg, sock, receiverIP, receiverPortNum, MDS);
+
 						//START FILE TRANSFER
 						long currentTime = System.currentTimeMillis();
 						File fd = new File(fileName);
 						FileInputStream fileIn = new FileInputStream(fd);
 						long numBytes = fd.length();
 						System.out.println(numBytes);
-					}
-					*/
+					
+					
 					sock.close();
 				}catch (Exception h){
-					System.out.println(h.getMessage());
+					System.out.println("error occured: " + h.toString() );
 				}
 
 
