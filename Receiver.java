@@ -161,6 +161,10 @@ public static String fileName;
 		String [] arrayMsg = new String(request.getData()).split(" ");
 		System.out.println(arrayMsg[0]);
 		System.out.println(arrayMsg[1]);
+		int mds = Integer.parseInt(arrayMsg[1]);
+		int packetNum = Integer.parseInt(arrayMsg[2]);
+		packetNum = packetNum/mds;
+		byte[][] file = new byte[packetNum][mds]; 
 		System.out.println("Message ends here");
 		
 		if(arrayMsg[0].equals("SYNC")){
@@ -173,6 +177,14 @@ public static String fileName;
 		else if(arrayMsg[0].equals("ACK")){
 			System.out.println("received ACK");
 			//Call function that will handle receiving transmission
+			boolean allPacketsReceived = false;
+			while(allPacketsReceived == false){
+				//handle receiving all packets and storing them to byte [][] file OR change to func.
+				
+
+			}
+
+			
 		}
 		
 		}

@@ -73,7 +73,7 @@ class senderGui{
 		}
 		
 		catch(Exception e){
-			textArea.setText("HANDSHAKE FAILED\n");
+			//textArea.setText("HANDSHAKE FAILED\n");
 			e.getMessage();
 		}
 		
@@ -159,19 +159,35 @@ frame = new JFrame();
 					InetAddress receiverIP = InetAddress.getByName(receiverIPField.getText());
 					DatagramSocket sock = new DatagramSocket(senderPortNum);
 					//sock.connect(receiverIP, receiverPortNum);
-					String handshakeMessage = "SYNC "+MDS+" ";
+					File fd = new File(fileNameField.getText());
+					//grab file size in bytes
+					long size = fd.length();
+					String handshakeMessage = "SYNC "+MDS+" " + size + " ";
 					//convert handshake message to stream of bytes
 					byte [] msg = handshakeMessage.getBytes();
 					System.out.println("before handshake");
 					boolean success = handshake(msg, sock, receiverIP, receiverPortNum, MDS);
-
+					System.out.println("after handshake");
 						//START FILE TRANSFER
 						long currentTime = System.currentTimeMillis();
-						File fd = new File(fileName);
+						
 						FileInputStream fileIn = new FileInputStream(fd);
 						long numBytes = fd.length();
 						System.out.println(numBytes);
-					
+						boolean [] seqArray;
+						/*
+							TODO:
+								figure out a way to handle arranging bigger files, possible file loss
+								if the number of packets exceeds max integer value (perhaps this exceeds the 
+								constraints of this project, since 2 billion * minimum MDS size is huge file)
+								send all packets
+								if packet send successfully, set seqarray[packetNumber] to true.
+								loop back through until unsuccessful packets have all been sent.
+
+
+						*/
+
+						
 					
 					sock.close();
 				}catch (Exception h){
