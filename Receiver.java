@@ -19,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.io.*;
 class receiverGui{
 
 	public JFrame frame;
@@ -152,42 +153,48 @@ public static String fileName;
 	}
 	public static void activate(){
 		System.out.println("Activating receiver");
-		int MDS;
+		int MDS = 1000;//default
+		int packetNum;
 		byte [] buffer = new byte[1000];
 		try{
-		while(true){
+		boolean handshaking = true;
+		while(handshaking){
 		DatagramPacket request = new DatagramPacket(buffer, buffer.length);
 		socket.receive(request);
 		String [] arrayMsg = new String(request.getData()).split(" ");
 		System.out.println(arrayMsg[0]);
-		System.out.println(arrayMsg[1]);
-		int mds = Integer.parseInt(arrayMsg[1]);
-		int packetNum = Integer.parseInt(arrayMsg[2]);
-		packetNum = packetNum/mds;
-		byte[][] file = new byte[packetNum][mds]; 
+		//MDS = Integer.parseInt(arrayMsg[1]);
+
 		System.out.println("Message ends here");
 		
 		if(arrayMsg[0].equals("SYNC")){
 		MDS = Integer.parseInt(arrayMsg[1]);	
+		packetNum = Integer.parseInt(arrayMsg[2]);
+		packetNum = (int)Math.ceil(packetNum/MDS);
+		
+		byte[][] file = new byte[packetNum][MDS]; 
+		
 		byte [] sndMsg = ("SYNACK").getBytes();
 		DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length ,senderIP,senderPort);
 		System.out.println("sending SYNACK");
 		socket.send(ack);
 		}
 		else if(arrayMsg[0].equals("ACK")){
-			System.out.println("received ACK");
+			System.out.println("received ACK,Now starting Transmission Thread");
 			//Call function that will handle receiving transmission
+			handshaking = false;
+			new fileTransfer(MDS).start();
+			/*
 			boolean allPacketsReceived = false;
 			while(allPacketsReceived == false){
 				//handle receiving all packets and storing them to byte [][] file OR change to func.
 				
-
 			}
 
-			
+			*/
+		}
 		}
 		
-		}
 		
 		}
 		catch(Exception e){
@@ -195,4 +202,101 @@ public static String fileName;
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	public static class fileTransfer extends Thread {
+		private int MDS;
+		public fileTransfer(int MDS){
+			this.MDS  = MDS;
+		}
+			
+            public void run() {
+                try {
+					byte [] buffer = new byte[MDS+4];
+					byte [] sndMsg = new byte[4];
+					DatagramPacket request = new DatagramPacket(buffer,buffer.length);
+					 FileWriter fileWriter = new FileWriter("test.txt");
+					PrintWriter writer = new PrintWriter(fileWriter);
+					while(true){
+						
+						socket.receive(request);
+						String []arrayMsg = new String(request.getData()).split(" ", 2);
+						if(arrayMsg[0].equals("EOT")){
+							break;
+						}
+						else{
+						writer.print(new String(arrayMsg[1]).trim());
+						
+						//System.out.println(new String(arrayMsg[1]).trim());
+						sndMsg = arrayMsg[0].getBytes();
+						DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length ,senderIP,senderPort);
+						socket.send(ack);
+						}
+					}
+					writer.close();
+					
+					/*
+                    if (connected) {
+                        int counter = 1;
+                        transmitting = true;
+                        String packetInfo[] = handshake().split(" ");
+                        
+                        packetSize = Integer.parseInt(packetInfo[0]);
+                        numPackets = Integer.parseInt(packetInfo[1]);
+                        
+                        byte[][] file = new byte[numPackets][packetSize];
+                        acknowledged = new boolean[numPackets];
+                        dataArea.setText("");
+                        byte[] buffer = new byte[packetSize];
+                        DatagramPacket packet = new DatagramPacket(buffer, packetSize);
+                        while (transmitting) {
+                            
+                            counter++;
+                            socket.receive(packet);
+
+                            byte[] sequenceNumberByte = Arrays.copyOfRange(buffer, 0, 4);
+                            byte[] filePortionByte;
+                            int sequenceNumber = java.nio.ByteBuffer.wrap(sequenceNumberByte).getInt();
+                            if(sequenceNumber>numPackets || sequenceNumber==-5){
+    
+                                throw new Exception("Error: File no longer Transfering");
+                                
+                            }
+                            if (sequenceNumber == (numPackets-1)) {
+                                filePortionByte = Arrays.copyOfRange(buffer, 4, packet.getLength());
+                            } else {
+                                filePortionByte = Arrays.copyOfRange(buffer, 4, buffer.length);
+                            }
+                            if (sequenceNumber == -1) {
+                                transmitting = false;
+                                FileOutputStream out = new FileOutputStream(fileNameField.getText());
+                                for (int i = 0; i < numPackets; i++) {
+                                    out.write(file[i]);
+
+                                }
+                                dataArea.setText(dataArea.getText() + "File Received\n");
+                            } else if (counter % 10 != 0 || reliable) {
+                                dataArea.setText(dataArea.getText() + "There were " + (sequenceNumber + 1) + " of "
+                                        + numPackets + " packets Received in order\n");
+                                        dataArea.setCaretPosition(dataArea.getDocument().getLength());
+                                file[sequenceNumber] = filePortionByte;
+                                acknowledged[sequenceNumber] = true;
+
+                    
+                                DatagramPacket pSend = new DatagramPacket(sequenceNumberByte, 4);
+                                socket.send(pSend);
+
+                            }
+                        }
+                    }
+					*/
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+					
+                }
+
+            }
+
+        
+
+    }
 }

@@ -66,7 +66,7 @@ class senderGui{
 			message = msg.getBytes();
 			request = new DatagramPacket(message, message.length, receiver,portNum);
 			socket.send(request);
-			textArea.append("HANDSHAKE success"+"\n");
+			//textArea.append("HANDSHAKE success"+"\n");
 			return true;
 		}
 		
@@ -74,14 +74,35 @@ class senderGui{
 		
 		catch(Exception e){
 			//textArea.setText("HANDSHAKE FAILED\n");
-			e.getMessage();
+			System.out.println("Error occurred");
+			e.printStackTrace();
 		}
 		
 		return false;
 	}
 
 private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledgement, int num_seq, int MDS){
+	try{
+	byte[] packet = new byte [MDS + 4];
+	for( int index = 0; index < num_seq; index++){
+		String msg = index + " " + new String(dataArray[index]);
+		byte[] toSend =  msg.getBytes();
+		DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
+		sock.send(sendMsg);
+		byte[] ack = new byte[4];
+		DatagramPacket receiveMsg = new DatagramPacket(ack, ack.length);
+		sock.receive(receiveMsg);
+		System.out.println("ACK "+ new String(receiveMsg.getData())+ " received");
+	}
+	//SEND END OF TRANSMISSION PACKET
+	String msg = "EOT ";
+	byte[] toSend =  msg.getBytes();
+	DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
+	sock.send(sendMsg);
+	
+	/*
 	Thread outSending = new Thread(){
+		
 		public void run(){
 			boolean transferring = true;
 			int index = 0;
@@ -99,7 +120,7 @@ private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort,
 					sock.receive(receiveMsg);
 					//successfully received ack
 					String [] receivedMsg = new String(receiveMsg.getData()).split(" ");
-					acknowledgement[i] = true;
+					acknowledgement[index] = true;
 					int nextPacket = Integer.parseInt(receivedMsg[0]);
 					index = nextPacket+ 1;
 					
@@ -110,17 +131,25 @@ private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort,
 
 				if(index == num_seq){
 					transferring = false;
+					
 					for(int i = 0; i < num_seq; i++){
 						if(acknowledgement[i] == false){
 							transferring = true;
 							index = 0;
 						}
 					}
+					
 				}
 			}
 		}
 	};
+	*/  
 }
+catch(Exception e){
+	System.out.println("TRANSMISSION FAILED");
+	System.out.println(e.getMessage());
+}
+	}
 
 	
 		private void initialize() {
@@ -210,24 +239,33 @@ frame = new JFrame();
 					System.out.println("before handshake");
 					boolean success = handshake(msg, sock, receiverIP, receiverPortNum, MDS);
 					System.out.println("after handshake");
+					if (success){
 						//START FILE TRANSFER
 						long currentTime = System.currentTimeMillis();
-						
 						FileInputStream fileIn = new FileInputStream(fd);
 						long numBytes = fd.length();
 						System.out.println(numBytes);
-						int num_packages = (int) Math.ceil(size/MDS);
+						int num_packages = (int)(size/MDS);
+						if(size%MDS !=0){
+							num_packages+=1;
+						}
 						byte [][] dataArray = new byte[num_packages][MDS];
 						boolean [] acknowledged = new boolean[num_packages];
 
 						//initialize acknowledgement array and read file into array
+						System.out.println("Converting file into array of bytes");
 						for(int i = 0; i < num_packages; i++){
 							acknowledged[i] = false;
 							fileIn.read(dataArray[i]);
+							
 						}
+				
 						//call threaded function to handle sending
-
-
+						send(sock,receiverIP,receiverPortNum,dataArray, acknowledged, num_packages,MDS);
+					}
+					else{
+						System.out.println("Handshake with Receiver Failed, Cannot begin Transfer");
+					}
 						
 					
 					sock.close();
