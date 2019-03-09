@@ -80,6 +80,32 @@ class senderGui{
 		return false;
 	}
 
+private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledgment, int num_seq, int MDS){
+	Thread outSending = new Thread(){
+		public void run(){
+			boolean transferring = true;
+			int index = 0;
+			while(transferring){
+				try{
+					byte[] packet = new byte[MDS + 4];
+
+					String msg = "" + index + " " + dataArray[index];
+					byte[] toSend = msg.getBytes();
+					DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
+					sock.send(sendMsg);
+
+					byte[] ack = new byte[4];
+					DatagramPacket receiveMsg = new DatagramPacket(ack, ack.length);
+					sock.receive(receiveMsg);
+					
+				} catch(Exception e){
+					//do something (timeout, or IO exception)
+				}
+			}
+		}
+	};
+}
+
 	
 		private void initialize() {
 frame = new JFrame();
@@ -161,7 +187,7 @@ frame = new JFrame();
 					//sock.connect(receiverIP, receiverPortNum);
 					File fd = new File(fileNameField.getText());
 					//grab file size in bytes
-					long size = fd.length();
+					int size = (int)(fd.length());
 					String handshakeMessage = "SYNC "+MDS+" " + size + " ";
 					//convert handshake message to stream of bytes
 					byte [] msg = handshakeMessage.getBytes();
@@ -174,18 +200,17 @@ frame = new JFrame();
 						FileInputStream fileIn = new FileInputStream(fd);
 						long numBytes = fd.length();
 						System.out.println(numBytes);
-						boolean [] seqArray;
-						/*
-							TODO:
-								figure out a way to handle arranging bigger files, possible file loss
-								if the number of packets exceeds max integer value (perhaps this exceeds the 
-								constraints of this project, since 2 billion * minimum MDS size is huge file)
-								send all packets
-								if packet send successfully, set seqarray[packetNumber] to true.
-								loop back through until unsuccessful packets have all been sent.
+						int num_packages = (int) Math.ceil(size/MDS);
+						byte [][] dataArray = new byte[num_packages][MDS];
+						boolean [] acknowledged = new boolean[num_packages];
 
+						//initialize acknowledgement array and read file into array
+						for(int i = 0; i < num_packages; i++){
+							acknowledged[i] = false;
+							fileIn.read(dataArray[i]);
+						}
+						//call threaded function to handle sending
 
-						*/
 
 						
 					
