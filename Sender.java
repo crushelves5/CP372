@@ -80,7 +80,7 @@ class senderGui{
 		return false;
 	}
 
-private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledgment, int num_seq, int MDS){
+private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledgement, int num_seq, int MDS){
 	Thread outSending = new Thread(){
 		public void run(){
 			boolean transferring = true;
@@ -90,16 +90,32 @@ private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort,
 					byte[] packet = new byte[MDS + 4];
 
 					String msg = "" + index + " " + dataArray[index];
-					byte[] toSend = msg.getBytes();
+					byte[] toSend =  msg.getBytes();
 					DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
 					sock.send(sendMsg);
 
 					byte[] ack = new byte[4];
 					DatagramPacket receiveMsg = new DatagramPacket(ack, ack.length);
 					sock.receive(receiveMsg);
+					//successfully received ack
+					String [] receivedMsg = new String(receiveMsg.getData()).split(" ");
+					acknowledgement[i] = true;
+					int nextPacket = Integer.parseInt(receivedMsg[0]);
+					index = nextPacket+ 1;
+					
 					
 				} catch(Exception e){
 					//do something (timeout, or IO exception)
+				}
+
+				if(index == num_seq){
+					transferring = false;
+					for(int i = 0; i < num_seq; i++){
+						if(acknowledgement[i] == false){
+							transferring = true;
+							index = 0;
+						}
+					}
 				}
 			}
 		}
