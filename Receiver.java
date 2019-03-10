@@ -32,7 +32,7 @@ class receiverGui{
 	private JLabel lblSender;
 	private JLabel lblPortOfReceiver;
 	public JTextField receiverPortField;
-	private JLabel receivedLabel;
+	public JLabel receivedLabel;
 	
 	public receiverGui(){
 		initialize();
@@ -101,10 +101,12 @@ class receiverGui{
 		JRadioButton rdbtnReliable = new JRadioButton("RELIABLE");
 		rdbtnReliable.setSelected(true);
 		rdbtnReliable.setBounds(10, 217, 109, 23);
+		rdbtnReliable.setActionCommand("RELIABLE");
 		frame.getContentPane().add(rdbtnReliable);
 		
 		JRadioButton rdbtnUnreliable = new JRadioButton("UNRELIABLE");
 		rdbtnUnreliable.setBounds(140, 217, 109, 23);
+		rdbtnUnreliable.setActionCommand("UNRELIABLE");
 		frame.getContentPane().add(rdbtnUnreliable);
 		
 		ButtonGroup bgroup = new ButtonGroup();
@@ -119,6 +121,13 @@ class receiverGui{
 				Receiver.senderIP =  InetAddress.getByName(senderIPField.getText());
 				Receiver.senderPort = Integer.parseInt(senderPortField.getText());
 				Receiver.fileName = fileNameField.getText();
+				if(bgroup.getSelection().getActionCommand().equals("RELIABLE")){
+					Receiver.reliable = true;
+				}
+				else{
+					Receiver.reliable = false;
+				}
+				
 				Receiver.activate();
 				}
 				catch(Exception e){
@@ -137,6 +146,7 @@ public static DatagramSocket socket;
 public static InetAddress senderIP;
 public static int senderPort;
 public static String fileName;
+public static boolean reliable;
 	public static void main(String[] args){
 			EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -216,9 +226,11 @@ public static String fileName;
 					DatagramPacket request = new DatagramPacket(buffer,buffer.length);
 					 FileWriter fileWriter = new FileWriter("test.txt");
 					PrintWriter writer = new PrintWriter(fileWriter);
+					int packet_count = 1;
 					while(true){
 						
 						socket.receive(request);
+						if(packet_count != 10 || reliable == true){
 						String []arrayMsg = new String(request.getData()).split(" ", 2);
 						if(arrayMsg[0].equals("EOT")){
 							break;
@@ -230,6 +242,9 @@ public static String fileName;
 						sndMsg = arrayMsg[0].getBytes();
 						DatagramPacket ack = new DatagramPacket(sndMsg,sndMsg.length ,senderIP,senderPort);
 						socket.send(ack);
+						}
+						window.receivedLabel.setText(""+packet_count);
+						packet_count++;
 						}
 					}
 					writer.close();
@@ -293,10 +308,10 @@ public static String fileName;
                     System.out.println(e.getMessage());
 					
                 }
-
+socket.close();
             }
 
         
-
+		
     }
 }
