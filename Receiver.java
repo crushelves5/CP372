@@ -224,7 +224,7 @@ public static boolean reliable;
 					byte [] buffer = new byte[MDS+4];
 					byte [] sndMsg = new byte[4];
 					DatagramPacket request = new DatagramPacket(buffer,buffer.length);
-					 FileWriter fileWriter = new FileWriter("test.txt");
+					FileWriter fileWriter = new FileWriter(fileName);
 					PrintWriter writer = new PrintWriter(fileWriter);
 					int packet_count = 1;
 					while(true){
