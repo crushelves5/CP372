@@ -81,75 +81,41 @@ class senderGui{
 		return false;
 	}
 
-private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledgement, int num_seq, int MDS){
+private int sendHelper(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, int MDS, int index){
+	
 	try{
-	byte[] packet = new byte [MDS + 4];
-	for( int index = 0; index < num_seq; index++){
 		String msg = index + " " + new String(dataArray[index]);
-		byte[] toSend =  msg.getBytes();
+		byte[] toSend = msg.getBytes();
 		DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
 		sock.send(sendMsg);
 		byte[] ack = new byte[4];
 		DatagramPacket receiveMsg = new DatagramPacket(ack, ack.length);
 		sock.receive(receiveMsg);
-		System.out.println("ACK "+ new String(receiveMsg.getData())+ " received");
+		return index++; //returns ack number to send func
+
+	}catch(Exception e){
+		sendHelper(sock, receiverIP, receiverPort, dataArray, MDS, index);
+	}
+
+	return -1; //something went very bad
+}
+
+private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledged, int num_seq, int MDS){
+	
+	for(int index = 0; index < num_seq; index++){
+		int ackReceived = sendHelper(sock, receiverIP, receiverPort, dataArray, MDS, index);
+		System.out.println("ACK " + ackReceived + " received.");
 	}
 	//SEND END OF TRANSMISSION PACKET
+	try{
 	String msg = "EOT ";
 	byte[] toSend =  msg.getBytes();
 	DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
 	sock.send(sendMsg);
-	
-	/*
-	Thread outSending = new Thread(){
-		
-		public void run(){
-			boolean transferring = true;
-			int index = 0;
-			while(transferring){
-				try{
-					byte[] packet = new byte[MDS + 4];
-
-					String msg = "" + index + " " + dataArray[index];
-					byte[] toSend =  msg.getBytes();
-					DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
-					sock.send(sendMsg);
-
-					byte[] ack = new byte[4];
-					DatagramPacket receiveMsg = new DatagramPacket(ack, ack.length);
-					sock.receive(receiveMsg);
-					//successfully received ack
-					String [] receivedMsg = new String(receiveMsg.getData()).split(" ");
-					acknowledgement[index] = true;
-					int nextPacket = Integer.parseInt(receivedMsg[0]);
-					index = nextPacket+ 1;
-					
-					
-				} catch(Exception e){
-					//do something (timeout, or IO exception)
-				}
-
-				if(index == num_seq){
-					transferring = false;
-					
-					for(int i = 0; i < num_seq; i++){
-						if(acknowledgement[i] == false){
-							transferring = true;
-							index = 0;
-						}
-					}
-					
-				}
-			}
-		}
-	};
-	*/  
-}
-catch(Exception e){
-	System.out.println("TRANSMISSION FAILED");
-	System.out.println(e.getMessage());
-}
+	}catch(Exception a){
+		//arbitrary for EOT
 	}
+}
 
 	
 		private void initialize() {
