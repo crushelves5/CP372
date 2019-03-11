@@ -93,8 +93,11 @@ private int sendHelper(DatagramSocket sock, InetAddress receiverIP, int receiver
 		sock.receive(receiveMsg);
 		return index++; //returns ack number to send func
 
+	}catch(SocketTimeoutException s){
+		System.out.println("timeout occured");
+		return sendHelper(sock, receiverIP, receiverPort, dataArray, MDS, index);
 	}catch(Exception e){
-		sendHelper(sock, receiverIP, receiverPort, dataArray, MDS, index);
+		System.out.println("error occured");
 	}
 
 	return -1; //something went very bad
@@ -191,10 +194,12 @@ frame = new JFrame();
 				String fileName = fileNameField.getText();
 				int senderPortNum = Integer.parseInt(senderPortField.getText());
 				int receiverPortNum = Integer.parseInt(receiverPortField.getText());
+				int timeOutVal = Integer.parseInt(timeoutField.getText());
 				
 				try{
 					InetAddress receiverIP = InetAddress.getByName(receiverIPField.getText());
 					DatagramSocket sock = new DatagramSocket(senderPortNum);
+					sock.setSoTimeout(timeOutVal);
 					//sock.connect(receiverIP, receiverPortNum);
 					File fd = new File(fileNameField.getText());
 					//grab file size in bytes

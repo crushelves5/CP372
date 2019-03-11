@@ -118,6 +118,7 @@ class receiverGui{
 			public void actionPerformed(ActionEvent arg0) {
 				try{
 				Receiver.socket = new DatagramSocket(Integer.parseInt(receiverPortField.getText()));
+				//Receiver.socket.setSoTimeout(100000);
 				Receiver.senderIP =  InetAddress.getByName(senderIPField.getText());
 				Receiver.senderPort = Integer.parseInt(senderPortField.getText());
 				Receiver.fileName = fileNameField.getText();
@@ -230,7 +231,7 @@ public static boolean reliable;
 					while(true){
 						
 						socket.receive(request);
-						if(packet_count != 10 || reliable == true){
+						if(packet_count % 10 != 0 || reliable == true){
 						String []arrayMsg = new String(request.getData()).split(" ", 2);
 						if(arrayMsg[0].equals("EOT")){
 							break;
@@ -244,8 +245,9 @@ public static boolean reliable;
 						socket.send(ack);
 						}
 						window.receivedLabel.setText(""+packet_count);
-						packet_count++;
+						
 						}
+						packet_count++;
 					}
 					writer.close();
 					
