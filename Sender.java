@@ -72,10 +72,12 @@ class senderGui{
 		
 		}
 		
-		catch(Exception e){
+		catch(SocketTimeoutException e){
 			//textArea.setText("HANDSHAKE FAILED\n");
-			System.out.println("Error occurred");
-			e.printStackTrace();
+			System.out.println("handshake fail occurred");
+			//e.printStackTrace();
+		}catch(Exception e){
+			System.out.println("error occured");
 		}
 		
 		return false;
@@ -104,7 +106,7 @@ private int sendHelper(DatagramSocket sock, InetAddress receiverIP, int receiver
 }
 
 private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, boolean[] acknowledged, int num_seq, int MDS){
-	
+	long startTime = System.currentTimeMillis();
 	for(int index = 0; index < num_seq; index++){
 		int ackReceived = sendHelper(sock, receiverIP, receiverPort, dataArray, MDS, index);
 		System.out.println("ACK " + ackReceived + " received.");
@@ -118,6 +120,9 @@ private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort,
 	}catch(Exception a){
 		//arbitrary for EOT
 	}
+	long totalTime = System.currentTimeMillis() - startTime;
+	textArea.setText("Transfer took " + totalTime + " ms to transfer.\n");
+	
 }
 
 	
@@ -175,6 +180,7 @@ frame = new JFrame();
 		maxSizeField.setColumns(10);
 		maxSizeField.setBounds(153, 186, 136, 20);
 		frame.getContentPane().add(maxSizeField);
+		
 		
 		timeoutLabel = new JLabel("Timeout (In Milliseconds):");
 		timeoutLabel.setBounds(10, 214, 143, 14);
@@ -253,12 +259,14 @@ frame = new JFrame();
 		frame.getContentPane().add(btnNewButton);
 
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		textArea.setEditable(false);
-		scroll = new JScrollPane(textArea);
 		textArea.setBounds(10, 296, 306, 163);
+		scroll = new JScrollPane(textArea);
 		scroll.setBounds(10,296,306,163);
 		frame.getContentPane().add(scroll);
+
+
 		
 		lblSender = new JLabel("SENDER");
 		lblSender.setFont(new Font("Tahoma", Font.PLAIN, 18));

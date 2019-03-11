@@ -78,7 +78,7 @@ class receiverGui{
 		maxSizeField = new JLabel("Current # of received in-order packets");
 		maxSizeField.setBounds(10, 186, 193, 14);
 		frame.getContentPane().add(maxSizeField);
-		
+		//comment
 		lblSender = new JLabel("RECEIVER");
 		lblSender.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblSender.setHorizontalAlignment(SwingConstants.CENTER);
