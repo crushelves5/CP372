@@ -78,7 +78,7 @@ class receiverGui{
 		maxSizeField = new JLabel("Current # of received in-order packets");
 		maxSizeField.setBounds(10, 186, 193, 14);
 		frame.getContentPane().add(maxSizeField);
-		//comment
+		
 		lblSender = new JLabel("RECEIVER");
 		lblSender.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		lblSender.setHorizontalAlignment(SwingConstants.CENTER);
@@ -237,7 +237,9 @@ public static boolean reliable;
 							break;
 						}
 						else{
-						writer.print(new String(arrayMsg[1]).trim());
+						String w = arrayMsg[1].trim().replace('~', '\n').replace('|', ' ');
+
+						writer.print(w);
 						
 						//System.out.println(new String(arrayMsg[1]).trim());
 						sndMsg = arrayMsg[0].getBytes();

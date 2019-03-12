@@ -19,6 +19,8 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.lang.Object;
+import java.lang.String;
 
 
 class senderGui{
@@ -86,7 +88,7 @@ class senderGui{
 private int sendHelper(DatagramSocket sock, InetAddress receiverIP, int receiverPort, byte[][] dataArray, int MDS, int index){
 	
 	try{
-		String msg = index + " " + new String(dataArray[index]);
+		String msg = index + " " + new String(dataArray[index]).replace('\n', '~').replace(' ', '|');
 		byte[] toSend = msg.getBytes();
 		DatagramPacket sendMsg = new DatagramPacket(toSend, toSend.length, receiverIP, receiverPort);
 		sock.send(sendMsg);
@@ -121,7 +123,7 @@ private void send(DatagramSocket sock, InetAddress receiverIP, int receiverPort,
 		//arbitrary for EOT
 	}
 	long totalTime = System.currentTimeMillis() - startTime;
-	textArea.setText("Transfer took " + totalTime + " ms to transfer.\n");
+	textArea.append("Transfer took " + totalTime + " ms to transfer.\n");
 	
 }
 
